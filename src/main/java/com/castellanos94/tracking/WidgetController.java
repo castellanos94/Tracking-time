@@ -190,6 +190,16 @@ public class WidgetController {
     }
 
     @FXML
+    private void handleExport() {
+        System.out.println("Export to Excel triggered");
+        // TODO: Implement Excel export logic
+        // 1. Prompt user for file location (FileChooser)
+        // 2. Iterate over timerService.getHistory() (or navigate to a full history
+        // view)
+        // 3. Write data using Apache POI or similar library
+    }
+
+    @FXML
     private void handleOpenSettings() {
         try {
             javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
