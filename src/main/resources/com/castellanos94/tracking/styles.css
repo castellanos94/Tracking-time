@@ -1,0 +1,108 @@
+.widget-container {
+    -fx-background-color: rgba(30, 30, 30, 0.9);
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 5);
+}
+
+.title-label {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 12px;
+}
+
+.timer-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.action-button {
+    -fx-background-color: #4CAF50;
+    /* Green */
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #45a049;
+}
+
+.stop-button {
+    -fx-background-color: #f44336;
+    /* Red */
+}
+
+.stop-button:hover {
+    -fx-background-color: #d32f2f;
+}
+
+/* ComboBox Styling */
+.combo-box {
+    -fx-background-color: #333333;
+    -fx-background-radius: 5;
+    -fx-border-color: #555555;
+    -fx-border-radius: 5;
+}
+
+.combo-box .cell,
+.combo-box .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 5);
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: white;
+    -fx-padding: 5 10 5 10;
+}
+
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: #555555;
+}
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff6b6b;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.close-button:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.2);
+    -fx-background-radius: 50;
+}
+
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #bbbbbb;
+    -fx-font-size: 12px;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-text-fill: white;
+}
+
+.history-list {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-background-radius: 5;
+}
+
+.history-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 5;
+}
+
+.history-list .list-cell:empty {
+    -fx-background-color: transparent;
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.castellanos94.tracking.WidgetController"
+      styleClass="widget-container" spacing="10" alignment="TOP_CENTER" minWidth="250">
+
+    <!-- Top Bar -->
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button text="⚙" onAction="#handleOpenSettings" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;" />
+        <Label text="Time Tracker" styleClass="title-label" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+        <Label fx:id="totalEarningsLabel" text="Total: $0.00" style="-fx-text-fill: #4CAF50; -fx-font-weight: bold; -fx-font-size: 12px;" />
+        <Button text="X" onAction="#handleClose" styleClass="close-button" />
+    </HBox>
+
+    <!-- Timer View -->
+    <VBox fx:id="timerView" spacing="10" alignment="CENTER">
+        <Label fx:id="timerLabel" text="00:00:00" styleClass="timer-label" />
+        
+        <TextField fx:id="activityField" promptText="What are you working on?" styleClass="text-input" />
+
+        <HBox spacing="10" alignment="CENTER">
+            <ComboBox fx:id="categoryComboBox" promptText="Select Category" />
+            <Button fx:id="toggleButton" text="Start" onAction="#handleToggleTimer" styleClass="action-button" />
+        </HBox>
+    </VBox>
+
+    <!-- History View (Initially Hidden) -->
+    <VBox fx:id="historyView" spacing="5" alignment="CENTER" managed="false" visible="false">
+        <Label text="Recent History" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+        <ListView fx:id="historyList" prefHeight="150" styleClass="history-list"/>
+    </VBox>
+
+    <!-- Bottom Controls -->
+    <Button fx:id="historyButton" text="Show History" onAction="#handleToggleHistory" styleClass="secondary-button" />
+
+</VBox>
