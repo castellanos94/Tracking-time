@@ -72,6 +72,41 @@ public class TimeEntryDAO {
         return list;
     }
 
+    public List<TimeEntry> findByRange(LocalDateTime start, LocalDateTime end) throws SQLException {
+        List<TimeEntry> list = new ArrayList<>();
+        String sql = "SELECT * FROM time_entries WHERE start_time >= ? AND start_time < ? ORDER BY start_time DESC";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setTimestamp(1, Timestamp.valueOf(start));
+            pstmt.setTimestamp(2, Timestamp.valueOf(end));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        }
+        return list;
+    }
+
+    public List<TimeEntry> findByDate(java.time.LocalDate date) throws SQLException {
+        List<TimeEntry> list = new ArrayList<>();
+        String sql = "SELECT * FROM time_entries WHERE start_time >= ? AND start_time < ? ORDER BY start_time DESC";
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setTimestamp(1, Timestamp.valueOf(startOfDay));
+            pstmt.setTimestamp(2, Timestamp.valueOf(endOfDay));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     private TimeEntry mapRow(ResultSet rs) throws SQLException {
         TimeEntry entry = new TimeEntry();
         entry.setId(rs.getString("id"));

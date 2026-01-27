@@ -1,73 +1,85 @@
 # Time Tracker
 
-Una aplicación de escritorio ligera construida con JavaFX para el seguimiento del tiempo dedicado a diferentes tareas y categorías. Diseñada para freelancers y profesionales, permite gestionar proyectos, calcular ganancias en tiempo real y exportar informes detallados.
+A lightweight desktop time tracking application built with **JavaFX** and **Apache Derby**. Designed for freelancers and professionals, it allows you to manage projects, calculate real-time earnings, and import/export detailed reports.
 
-## 🏗 Arquitectura y Diseño
+![Time Tracker UI](https://via.placeholder.com/800x400?text=Time+Tracker+UI+Placeholder)
 
-El proyecto sigue el patrón de diseño **MVC (Modelo-Vista-Controlador)** con una capa de servicio robusta y persistencia basada en base de datos.
+## 🏗 Architecture & Design
 
-### Componentes Principales
+The project follows the **MVC (Model-View-Controller)** pattern with a robust service layer and embedded database persistence.
 
-*   **Model (Modelo)**:
-    *   `Category`: Representa una categoría de trabajo. Contiene nombre, color y tarifa por hora.
-    *   `TimeEntry`: Registra una sesión de trabajo. Almacena la referencia a la categoría, hora de inicio/fin, descripción y tarifa histórica.
-    *   `TimeReport`: Clase DTO para la generación de reportes y exportación.
-*   **View (Vista)**:
-    *   Archivos FXML (`widget.fxml`, `configuration.fxml`, `export_wizard.fxml`).
-    *   Estilos CSS para una apariencia moderna.
-*   **Controller (Controlador)**:
-    *   `WidgetController`: Gestiona la ventana principal y el temporizador.
-    *   `ConfigurationController`: Gestiona la configuración de categorías y tarifas.
-    *   `ExportWizardController`: Asistente para la exportación de datos (JSON, CSV, XLSX).
+### Core Components
+
+*   **Model**:
+    *   `Category`: Represents a work category (name, color, hourly rate).
+    *   `TimeEntry`: Records a work session (start/end time, description, historical rate).
+    *   `TimeReport`: DTO for report generation and import/export.
+*   **View**:
+    *   FXML based UI (`widget.fxml`, `configuration.fxml`, `import_wizard.fxml`, `export_wizard.fxml`).
+    *   Modern CSS styling.
+*   **Controller**:
+    *   `WidgetController`: Manages the main "always-on-top" widget and timer.
+    *   `ConfigurationController`: Manages categories and settings.
+    *   `ImportWizardController` & `ExportWizardController`: Handles data migration tasks.
 *   **Service & Persistence**:
-    *   `TimerService`: Lógica de negocio principal.
-    *   `DatabaseManager`: Gestión de conexión a base de datos embebida **Apache Derby**.
-    *   **DAOs**: `CategoryDAO`, `TimeEntryDAO`, `TimeReportDAO` para acceso a datos.
-    *   `TimeReportExportService`: Servicio de generación de archivos de exportación.
+    *   `TimerService`: Core business logic.
+    *   `DatabaseManager`: Manages connection to the embedded **Apache Derby** database.
+    *   **DAOs**: `CategoryDAO`, `TimeEntryDAO`, `TimeReportDAO`.
+    *   `TimeReportExportService` & `TimeReportImportService`: Handle JSON, CSV, XLSX, and Custom format data transfer.
 
-### 💾 Persistencia de Datos
+### 💾 Data Persistence
 
-*   **Base de Datos**: Los datos se almacenan de forma segura en una base de datos embebida Apache Derby ubicada en `~/.tracking-time-db`.
-*   **Migración**: El sistema migra automáticamente datos de versiones anteriores (JSON) si se detectan.
-*   **Integridad**: Uso de transacciones y claves foráneas para integridad referencial.
+*   **Database**: Data is securely stored in an embedded **Apache Derby** database located at `~/.tracking-time-db`.
+*   **Migration**: Automatic migration from legacy JSON files if detected.
+*   **Integrity**: Uses transactions and foreign keys to ensure data consistency.
 
-### 📦 Empaquetado
+### 📦 Packaging
 
-*   Se utiliza `maven-shade-plugin` para crear un **"Fat Jar"**.
-*   Clase `Launcher` para compatibilidad con JavaFX.
+*   Uses `maven-shade-plugin` to build a **"Fat Jar"**.
+*   Includes a `Launcher` class to bypass JavaFX module restrictions.
 
-## 🚀 Situación Actual del Proyecto
+## 🚀 Key Features
 
-### Funcionalidades Implementadas ✅
+### Implemented ✅
 
-*   **Cronómetro**: Seguimiento de tiempo en tiempo real con descripciones.
-*   **Gestión de Categorías**: Crear, editar y eliminar categorías con tarifas personalizadas.
-*   **Historial y Reportes**: Visualización de historial y cálculo de ganancias.
-*   **Persistencia Robusta**: Base de datos SQL embebida (Derby).
-*   **Asistente de Exportación**: Exportación de datos a **Excel (XLSX)**, **CSV** y **JSON** con filtrado por rango de fechas.
-*   **Widget UI**: Ventana "siempre visible" para acceso rápido.
-*   **Build Scripts**: Scripts de PowerShell optimizados.
+*   **⏱️ Smart Timer**: Real-time tracking with activity descriptions and category selection.
+*   **📊 category Management**: Create, edit, and manage categories with custom hourly rates.
+*   **📥 Import Wizard**: Import data from **JSON**, **CSV**, **Excel (XLSX)**, and **Custom** formats (Date, Desc, Duration, Payment).
+*   **📤 Export Wizard**: Export your history to **Excel**, **CSV**, or **JSON** with date range filtering.
+*   **💰 Real-Time Earnings**: View daily earnings calculated instantly based on your rates.
+*   **💾 Robust Persistence**: Reliable SQL storage with automatic legacy data migration.
+*   **🪟 Widget UI**: Draggable, transparent, and always-on-top window for unobtrusive tracking.
 
-### Pendiente / En Progreso 🚧
+### Roadmap 🚧
 
-*   **Filtrado Avanzado**: Mejorar las capacidades de filtrado en la vista de historial de la UI principal.
-*   **Edición de Entradas**: Permitir editar entradas de tiempo pasadas.
+*   **Advanced Filtering**: Enhanced history filtering in the main UI.
+*   **Entry Editing**: UI to modify past time entries.
+*   **Charts**: Visual analytics of time usage.
 
-## 🛠 Cómo Ejecutar y Construir
+## 🛠 How to Run & Build
 
-**Requisitos**: JDK 21+, Maven 3.11+
+**Prerequisites**: JDK 21+, Maven 3.11+
 
-### Ejecutar en Desarrollo
+### Run locally
+
 ```powershell
 .\run.ps1
 ```
 
-### Empaquetar (Crear Ejecutable JAR)
+### Build (Fat Jar)
+
 ```powershell
 .\package.ps1
 ```
-El archivo resultante estará en `target/tracking-time-1.0-SNAPSHOT.jar`.
-Para ejecutar el jar generado:
+
+The executable jar will be located at `target/tracking-time-1.0-SNAPSHOT.jar`.
+
+To run the built jar:
+
 ```powershell
 java -jar target/tracking-time-1.0-SNAPSHOT.jar
 ```
+
+## 🏷️ Tags
+
+`javafx`, `time-tracker`, `desktop-app`, `productivity`, `freelance-tools`, `java`, `apache-derby`, `embedded-database`, `apache-poi`, `excel-export`, `csv-import`, `json-persistence`, `open-source`

@@ -122,10 +122,14 @@ public class TimerService {
         try {
             // 1. Load from DB
             categories.setAll(categoryDAO.findAll());
-            history.setAll(timeEntryDAO.findAll());
+            // Only load today's history for the UI
+            history.setAll(timeEntryDAO.findByDate(java.time.LocalDate.now()));
 
             // 2. Migration Check
-            if (categories.isEmpty() && history.isEmpty() && dataFile.exists()) {
+            // Check if categories are empty to determine if this is a fresh start or
+            // migration needed
+            // We can check counts if needed, but categories usually exist if app was used.
+            if (categories.isEmpty() && dataFile.exists()) {
                 migrateLegacyData();
             }
 

@@ -190,6 +190,23 @@ public class WidgetController {
     }
 
     @FXML
+    private void handleCollapseHistory() {
+        if (historyList.isVisible()) {
+            historyList.setVisible(false);
+            historyList.setManaged(false);
+        } else {
+            historyList.setVisible(true);
+            historyList.setManaged(true);
+        }
+
+        // Auto-resize window
+        if (historyView.getScene() != null && historyView.getScene().getWindow() instanceof javafx.stage.Stage) {
+            javafx.stage.Stage stage = (javafx.stage.Stage) historyView.getScene().getWindow();
+            stage.sizeToScene();
+        }
+    }
+
+    @FXML
     private void handleImport() {
         try {
             javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
