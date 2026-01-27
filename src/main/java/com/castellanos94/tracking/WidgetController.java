@@ -191,12 +191,23 @@ public class WidgetController {
 
     @FXML
     private void handleExport() {
-        System.out.println("Export to Excel triggered");
-        // TODO: Implement Excel export logic
-        // 1. Prompt user for file location (FileChooser)
-        // 2. Iterate over timerService.getHistory() (or navigate to a full history
-        // view)
-        // 3. Write data using Apache POI or similar library
+        try {
+            javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("export_wizard.fxml"));
+            javafx.scene.Parent root = fxmlLoader.load();
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initStyle(javafx.stage.StageStyle.UTILITY);
+            stage.setAlwaysOnTop(true);
+            stage.setTitle("Export Data");
+            stage.setScene(new javafx.scene.Scene(root));
+
+            ExportWizardController controller = fxmlLoader.getController();
+            controller.setStage(stage);
+
+            stage.show();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

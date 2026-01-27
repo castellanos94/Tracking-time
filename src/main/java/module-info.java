@@ -10,6 +10,7 @@ module com.castellanos94.tracking {
     requires org.apache.derby.commons;
     requires org.apache.derby.tools;
     requires java.sql;
+    requires org.apache.poi.ooxml;
 
     opens com.castellanos94.tracking to javafx.fxml;
     opens com.castellanos94.tracking.model to com.fasterxml.jackson.databind, javafx.base;
