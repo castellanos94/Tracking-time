@@ -4,6 +4,8 @@
     <groupId>com.castellanos94</groupId>
     <artifactId>tracking-time</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Time Tracker</name>
+    <description>A lightweight desktop time tracking application with embedded database and export capabilities.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>

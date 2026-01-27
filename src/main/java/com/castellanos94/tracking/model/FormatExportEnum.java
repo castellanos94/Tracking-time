@@ -4,7 +4,8 @@ public enum FormatExportEnum {
 
     JSON("JSON", ".json"),
     XLSX("XLSX", ".xlsx"),
-    CSV("CSV", ".csv");
+    CSV("CSV", ".csv"),
+    CUSTOM("Custom", ".csv");
 
     private final String name;
     private final String extension;

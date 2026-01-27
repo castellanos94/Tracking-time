@@ -16,7 +16,8 @@
         <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
         <Label text="Time Tracker" styleClass="title-label" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
         <Label fx:id="totalEarningsLabel" text="Total: $0.00" style="-fx-text-fill: #4CAF50; -fx-font-weight: bold;"/>
-        <Button text="📥" onAction="#handleExport" styleClass="icon-button" />
+        <Button text="📥" onAction="#handleImport" styleClass="icon-button" />
+        <Button text="📤" onAction="#handleExport" styleClass="icon-button" />
         <Button text="⚙" onAction="#handleOpenSettings" styleClass="icon-button" />
         <Button text="✕" onAction="#handleClose" styleClass="icon-button" />
     </HBox>
@@ -33,8 +34,7 @@
         </HBox>
     </VBox>
 
-    <!-- History View (Initially Hidden) -->
-    <VBox fx:id="historyView" spacing="5" alignment="CENTER" managed="false" visible="false">
+    <VBox fx:id="historyView" spacing="5" alignment="CENTER">
         <Label text="Recent History" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
         <ListView fx:id="historyList" prefHeight="150" styleClass="history-list"/>
     </VBox>

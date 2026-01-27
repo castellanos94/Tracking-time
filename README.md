@@ -1,52 +1,57 @@
-# Time Tracker Application
+# Time Tracker
 
-Una aplicación de escritorio ligera construida con JavaFX para el seguimiento del tiempo dedicado a diferentes tareas y categorías. Diseñada como un widget flotante "siempre visible" para un acceso rápido y discreto.
+Una aplicación de escritorio ligera construida con JavaFX para el seguimiento del tiempo dedicado a diferentes tareas y categorías. Diseñada para freelancers y profesionales, permite gestionar proyectos, calcular ganancias en tiempo real y exportar informes detallados.
 
 ## 🏗 Arquitectura y Diseño
 
-El proyecto sigue el patrón de diseño **MVC (Modelo-Vista-Controlador)** con una capa de servicio robusta para la gestión de la lógica de negocio y el estado.
+El proyecto sigue el patrón de diseño **MVC (Modelo-Vista-Controlador)** con una capa de servicio robusta y persistencia basada en base de datos.
 
 ### Componentes Principales
 
 *   **Model (Modelo)**:
-    *   `Category`: Representa una categoría de trabajo (anteriormente "Proyecto"). Contiene nombre, color y tarifa por hora.
-    *   `TimeEntry`: Registra una sesión de trabajo. Almacena la referencia a la categoría, hora de inicio/fin y, crucialmente, una copia de la `hourlyRate` en el momento de la creación para preservar la integridad histórica.
-    *   `DataWrapper`: Clase auxiliar para la serialización JSON de todo el estado de la aplicación.
+    *   `Category`: Representa una categoría de trabajo. Contiene nombre, color y tarifa por hora.
+    *   `TimeEntry`: Registra una sesión de trabajo. Almacena la referencia a la categoría, hora de inicio/fin, descripción y tarifa histórica.
+    *   `TimeReport`: Clase DTO para la generación de reportes y exportación.
 *   **View (Vista)**:
-    *   Archivos FXML (`widget.fxml`, `configuration.fxml`) definen la estructura de la UI.
-    *   Estilos CSS (`styles.css`) para una apariencia moderna y limpia.
+    *   Archivos FXML (`widget.fxml`, `configuration.fxml`, `export_wizard.fxml`).
+    *   Estilos CSS para una apariencia moderna.
 *   **Controller (Controlador)**:
-    *   `WidgetController`: Gestiona la ventana principal, el temporizador, y la visualización del historial diario.
-    *   `ConfigurationController`: Gestiona la ventana de configuración de categorías (Lógica CRUD pendiente de implementación por el usuario).
-*   **Service (Servicio)**:
-    *   `TimerService`: Singleton que actúa como la única fuente de la verdad. Maneja la lista de categorías, el historial de tiempos, el cronómetro activo y la persistencia.
+    *   `WidgetController`: Gestiona la ventana principal y el temporizador.
+    *   `ConfigurationController`: Gestiona la configuración de categorías y tarifas.
+    *   `ExportWizardController`: Asistente para la exportación de datos (JSON, CSV, XLSX).
+*   **Service & Persistence**:
+    *   `TimerService`: Lógica de negocio principal.
+    *   `DatabaseManager`: Gestión de conexión a base de datos embebida **Apache Derby**.
+    *   **DAOs**: `CategoryDAO`, `TimeEntryDAO`, `TimeReportDAO` para acceso a datos.
+    *   `TimeReportExportService`: Servicio de generación de archivos de exportación.
 
 ### 💾 Persistencia de Datos
 
-*   Los datos se guardan automáticamente en un archivo JSON: `.tracking-time-data.json` ubicado en el directorio `user.home`.
-*   **Estrategia de Carga**: Al iniciar, se cargan todas las categorías y el historial completo. Sin embargo, la UI solo muestra las entradas del **día actual** para mantener la interfaz limpia.
-*   **Estrategia de Guardado**: Se guarda todo (categorías, historial de hoy y historial archivado) al cerrar la aplicación o modificar datos críticos.
+*   **Base de Datos**: Los datos se almacenan de forma segura en una base de datos embebida Apache Derby ubicada en `~/.tracking-time-db`.
+*   **Migración**: El sistema migra automáticamente datos de versiones anteriores (JSON) si se detectan.
+*   **Integridad**: Uso de transacciones y claves foráneas para integridad referencial.
 
 ### 📦 Empaquetado
 
-*   Se utiliza `maven-shade-plugin` para crear un **"Fat Jar"** (JAR con dependencias incluidas).
-*   Se incluye una clase `Launcher` separada para evitar conflictos de módulos de JavaFX al ejecutar el JAR directamente.
+*   Se utiliza `maven-shade-plugin` para crear un **"Fat Jar"**.
+*   Clase `Launcher` para compatibilidad con JavaFX.
 
 ## 🚀 Situación Actual del Proyecto
 
 ### Funcionalidades Implementadas ✅
-*   **Cronómetro**: Iniciar y detener el seguimiento de tiempo.
-*   **Gestión de Categorías (Básica)**: Selección de categoría activa desde el widget principal.
-*   **Historial Diario**: Visualización de las sesiones del día actual.
-*   **Cálculo de Ganancias**: Muestra el total ganado hoy basado en las tarifas por hora.
-*   **Persistencia Robusta**: Guardado automático y recuperación de datos; integridad de tarifas históricas.
-*   **Widget UI**: Ventana transparente, arrastrable y siempre visible.
-*   **Build Scripts**: Scripts de PowerShell (`run.ps1`, `package.ps1`) para facilitar la compilación y ejecución.
+
+*   **Cronómetro**: Seguimiento de tiempo en tiempo real con descripciones.
+*   **Gestión de Categorías**: Crear, editar y eliminar categorías con tarifas personalizadas.
+*   **Historial y Reportes**: Visualización de historial y cálculo de ganancias.
+*   **Persistencia Robusta**: Base de datos SQL embebida (Derby).
+*   **Asistente de Exportación**: Exportación de datos a **Excel (XLSX)**, **CSV** y **JSON** con filtrado por rango de fechas.
+*   **Widget UI**: Ventana "siempre visible" para acceso rápido.
+*   **Build Scripts**: Scripts de PowerShell optimizados.
 
 ### Pendiente / En Progreso 🚧
-*   **Lógica de Configuración (CRUD)**: La interfaz `configuration.fxml` y su controlador `ConfigurationController` están creados y conectados a los datos. **Falta implementar la lógica de negocio** dentro de los métodos `handleSave`, `handleDelete`, etc.
-*   **Exportar a Excel**: Se ha agregado el botón en la interfaz principal (`📥`) y el método `handleExport` en el controlador. **Falta implementar la lógica** de generación del archivo Excel (posiblemente usando Apache POI).
-*   **Filtrado de Historial por Fecha**: Implementar la capacidad de navegar y ver el historial de días anteriores, no solo el actual.
+
+*   **Filtrado Avanzado**: Mejorar las capacidades de filtrado en la vista de historial de la UI principal.
+*   **Edición de Entradas**: Permitir editar entradas de tiempo pasadas.
 
 ## 🛠 Cómo Ejecutar y Construir
 

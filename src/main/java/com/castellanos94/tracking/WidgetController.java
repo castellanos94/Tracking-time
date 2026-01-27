@@ -190,6 +190,27 @@ public class WidgetController {
     }
 
     @FXML
+    private void handleImport() {
+        try {
+            javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("import_wizard.fxml"));
+            javafx.scene.Parent root = fxmlLoader.load();
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initStyle(javafx.stage.StageStyle.UTILITY);
+            stage.setAlwaysOnTop(true);
+            stage.setTitle("Import Data");
+            stage.setScene(new javafx.scene.Scene(root));
+
+            ImportWizardController controller = fxmlLoader.getController();
+            controller.setStage(stage);
+
+            stage.show();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleExport() {
         try {
             javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
