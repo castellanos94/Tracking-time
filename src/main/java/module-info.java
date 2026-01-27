@@ -5,7 +5,7 @@ module com.castellanos94.tracking {
     requires com.fasterxml.jackson.datatype.jsr310;
 
     opens com.castellanos94.tracking to javafx.fxml;
-    opens com.castellanos94.tracking.model to com.fasterxml.jackson.databind;
+    opens com.castellanos94.tracking.model to com.fasterxml.jackson.databind, javafx.base;
 
     exports com.castellanos94.tracking;
 }
