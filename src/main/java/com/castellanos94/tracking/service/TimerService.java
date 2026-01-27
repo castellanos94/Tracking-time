@@ -1,16 +1,22 @@
 package com.castellanos94.tracking.service;
 
+import com.castellanos94.tracking.db.CategoryDAO;
+import com.castellanos94.tracking.db.DatabaseManager;
+import com.castellanos94.tracking.db.TimeEntryDAO;
 import com.castellanos94.tracking.model.Category;
 import com.castellanos94.tracking.model.DataWrapper;
 import com.castellanos94.tracking.model.TimeEntry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import java.io.File;
-import java.time.LocalDateTime;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+
+@Slf4j
 public class TimerService {
 
     private static TimerService instance;
@@ -18,13 +24,15 @@ public class TimerService {
     private final ObservableList<TimeEntry> history = FXCollections.observableArrayList();
 
     private TimeEntry currentEntry;
-    private ObjectMapper mapper;
+    private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final TimeEntryDAO timeEntryDAO = new TimeEntryDAO();
+
+    // Legacy JSON support for migration
     private final File dataFile = new File(System.getProperty("user.home"), ".tracking-time-data.json");
-    private java.util.List<TimeEntry> archivedHistory = new java.util.ArrayList<>();
+    private ObjectMapper mapper;
 
     private TimerService() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        DatabaseManager.initialize();
         loadData();
     }
 
@@ -44,13 +52,24 @@ public class TimerService {
 
         currentEntry = new TimeEntry(category.getId(), LocalDateTime.now(), category.getHourlyRate());
         currentEntry.setDescription(description);
+        try {
+            timeEntryDAO.save(currentEntry);
+        } catch (SQLException e) {
+            log.error("Failed to start timer", e);
+            throw new RuntimeException("Failed to start timer: " + e.getMessage(), e);
+        }
     }
 
     public void stopTimer() {
         if (currentEntry != null) {
             currentEntry.stop(LocalDateTime.now());
             history.add(0, currentEntry); // Add to top
-            saveData();
+            try {
+                timeEntryDAO.save(currentEntry);
+            } catch (SQLException e) {
+                log.error("Failed to stop timer", e);
+                throw new RuntimeException("Failed to stop timer: " + e.getMessage(), e);
+            }
             currentEntry = null;
         }
     }
@@ -72,61 +91,105 @@ public class TimerService {
     }
 
     public void addCategory(Category c) {
-        categories.add(c);
-        saveData();
+        for (Category category : categories) {
+            if (category.getName().equals(c.getName())) {
+                log.warn("Category already exists: " + c.getName());
+                throw new IllegalArgumentException("Category already exists: " + c.getName());
+            }
+        }
+        try {
+            categoryDAO.save(c);
+            categories.add(c);
+        } catch (SQLException e) {
+            log.error("Failed to add category", e);
+            throw new RuntimeException("Failed to add category: " + e.getMessage(), e);
+        }
     }
 
     public void saveData() {
-        try {
-            DataWrapper wrapper = new DataWrapper();
-            wrapper.setCategories(new java.util.ArrayList<>(categories));
-
-            // Combine current history (today) with archived history for saving
-            java.util.List<TimeEntry> allHistory = new java.util.ArrayList<>(history);
-            if (archivedHistory != null) {
-                allHistory.addAll(archivedHistory);
+        // No-op for file save, DB saves immediately on actions
+        // But maybe we want to update current entry?
+        if (currentEntry != null) {
+            try {
+                timeEntryDAO.save(currentEntry);
+            } catch (SQLException e) {
+                log.error("Failed to save current entry", e);
             }
-            wrapper.setHistory(allHistory);
-
-            mapper.writeValue(dataFile, wrapper);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     private void loadData() {
-        if (dataFile.exists()) {
-            try {
+        try {
+            // 1. Load from DB
+            categories.setAll(categoryDAO.findAll());
+            history.setAll(timeEntryDAO.findAll());
 
-                DataWrapper wrapper = mapper.readValue(dataFile, DataWrapper.class);
-                if (wrapper.getCategories() != null) {
-                    categories.setAll(wrapper.getCategories());
-                }
-                if (wrapper.getHistory() != null) {
-                    java.time.LocalDate today = java.time.LocalDate.now();
-                    history.clear();
-                    archivedHistory.clear();
-                    for (TimeEntry entry : wrapper.getHistory()) {
-                        if (entry.getStartTime().toLocalDate().equals(today)) {
-                            history.add(entry);
-                        } else {
-                            archivedHistory.add(entry);
-                        }
-                    }
-                    // Sort history by start time desc
-                    history.sort((a, b) -> b.getStartTime().compareTo(a.getStartTime()));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            // 2. Migration Check
+            if (categories.isEmpty() && history.isEmpty() && dataFile.exists()) {
+                migrateLegacyData();
             }
-        }
 
-        // Default data if empty (only if no categories loaded)
-        if (categories.isEmpty()) {
-            categories.add(new Category("Development", "#4CAF50", 50.0));
-            categories.add(new Category("Meetings", "#2196F3", 30.0));
-            categories.add(new Category("Research", "#FFC107", 40.0));
+            // 3. Defaults if still empty
+            if (categories.isEmpty()) {
+                addCategory(new Category("Development", "#4CAF50", 50.0));
+                addCategory(new Category("Meetings", "#2196F3", 30.0));
+                addCategory(new Category("Research", "#FFC107", 40.0));
+            }
+
+        } catch (SQLException e) {
+            log.error("Failed to load data", e);
+            throw new RuntimeException("Failed to load data: " + e.getMessage(), e);
         }
     }
 
+    private void migrateLegacyData() {
+        log.info("Migrating legacy data from JSON...");
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        try {
+            DataWrapper wrapper = mapper.readValue(dataFile, DataWrapper.class);
+            if (wrapper.getCategories() != null) {
+                for (Category c : wrapper.getCategories()) {
+                    try {
+                        // Ensure ID
+                        if (c.getId() == null)
+                            c.setId(java.util.UUID.randomUUID().toString());
+                        categoryDAO.save(c);
+                        categories.add(c);
+                    } catch (Exception ex) {
+                        log.error("Failed to migrate category: " + c.getName(), ex);
+                    }
+                }
+            }
+            if (wrapper.getHistory() != null) {
+                for (TimeEntry t : wrapper.getHistory()) {
+                    try {
+                        if (t.getId() == null)
+                            t.setId(java.util.UUID.randomUUID().toString());
+                        boolean catExists = categories.stream().anyMatch(cat -> cat.getId().equals(t.getCategoryId()));
+                        if (!catExists) {
+                            log.warn("Skipping time entry for unknown category: " + t.getCategoryId());
+                            continue;
+                        }
+
+                        timeEntryDAO.save(t);
+                        history.add(t);
+                    } catch (Exception ex) {
+                        log.error("Failed to migrate time entry", ex);
+                    }
+                }
+            }
+
+            // Rename legacy file to avoid re-migration
+            File backup = new File(dataFile.getParent(), ".tracking-time-data.json.bak");
+            if (dataFile.renameTo(backup)) {
+                log.info("Legacy data migrated and file renamed to .bak");
+            } else {
+                log.warn("Failed to rename legacy data file");
+            }
+
+        } catch (Exception e) {
+            log.error("Migration failed", e);
+        }
+    }
 }

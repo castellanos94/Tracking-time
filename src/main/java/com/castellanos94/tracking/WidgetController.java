@@ -207,6 +207,7 @@ public class WidgetController {
             javafx.scene.Parent root = fxmlLoader.load();
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.initStyle(javafx.stage.StageStyle.UTILITY);
+            stage.setAlwaysOnTop(true);
             stage.setTitle("Configuration");
             stage.setScene(new javafx.scene.Scene(root));
 
@@ -228,4 +229,5 @@ public class WidgetController {
         Platform.exit();
         System.exit(0);
     }
+
 }

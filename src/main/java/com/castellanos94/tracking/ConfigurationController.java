@@ -5,8 +5,12 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ConfigurationController {
 
     @FXML
@@ -32,6 +36,7 @@ public class ConfigurationController {
 
     private Stage stage;
     private com.castellanos94.tracking.service.TimerService timerService;
+    private com.castellanos94.tracking.model.Category selectedCategory;
 
     @FXML
     public void initialize() {
@@ -61,16 +66,21 @@ public class ConfigurationController {
                         }
                     }
                 });
-
+        rateField.setTextFormatter(new javafx.scene.control.TextFormatter<>(new DoubleStringConverter()));
         // Listen for selection to populate fields for editing
         categoriesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 com.castellanos94.tracking.model.Category c = (com.castellanos94.tracking.model.Category) newVal;
                 nameField.setText(c.getName());
                 rateField.setText(String.valueOf(c.getHourlyRate()));
-                colorPicker.setValue(javafx.scene.paint.Color.web(c.getColor()));
+                colorPicker.setValue(javafx.scene.paint.Color.web(safeColor(c.getColor())));
+                selectedCategory = c;
             }
         });
+    }
+
+    private String safeColor(String color) {
+        return color.trim().isEmpty() ? "#FFFFFF" : color;
     }
 
     public void setStage(Stage stage) {
@@ -83,16 +93,40 @@ public class ConfigurationController {
         nameField.clear();
         rateField.clear();
         colorPicker.setValue(javafx.scene.paint.Color.WHITE);
+        selectedCategory = null;
+        categoriesTable.refresh();
     }
 
     @FXML
     private void handleDelete() {
-        // Logic to delete selected category
+        if (selectedCategory != null) {
+            timerService.getCategories().remove(selectedCategory);
+            selectedCategory = null;
+            categoriesTable.refresh();
+        }
     }
 
     @FXML
     private void handleSave() {
-        // Logic to save (create or update) category
+        if (nameField.getText().trim().isEmpty() || rateField.getText().trim().isEmpty()) {
+            rateField.requestFocus();
+            rateField.setStyle("-fx-background-color: red;");
+            return;
+        }
+        rateField.setStyle("-fx-background-color: white;");
+        if (selectedCategory != null) {
+            selectedCategory.setName(nameField.getText());
+            selectedCategory.setHourlyRate(Double.parseDouble(rateField.getText()));
+            selectedCategory.setColor(toRGBCode(colorPicker.getValue()));
+        } else {
+            com.castellanos94.tracking.model.Category c = new com.castellanos94.tracking.model.Category();
+            c.setName(nameField.getText());
+            c.setHourlyRate(Double.parseDouble(rateField.getText()));
+            c.setColor(toRGBCode(colorPicker.getValue()));
+            timerService.addCategory(c);
+            log.info("Category saved: " + c.getName());
+        }
+        handleClear();
     }
 
     @FXML
@@ -100,5 +134,12 @@ public class ConfigurationController {
         if (stage != null) {
             stage.close();
         }
+    }
+
+    public static String toRGBCode(Color color) {
+        return String.format("#%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
     }
 }

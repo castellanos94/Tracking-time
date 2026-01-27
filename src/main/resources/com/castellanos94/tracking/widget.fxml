@@ -39,7 +39,4 @@
         <ListView fx:id="historyList" prefHeight="150" styleClass="history-list"/>
     </VBox>
 
-    <!-- Bottom Controls -->
-    <Button fx:id="historyButton" text="Show History" onAction="#handleToggleHistory" styleClass="secondary-button" />
-
 </VBox>
