@@ -13,23 +13,28 @@
 <BorderPane styleClass="history-window" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.castellanos94.tracking.HistoryController">
     <!-- Header: Filters -->
     <top>
-        <VBox spacing="10">
-            <padding><Insets top="15" right="15" bottom="10" left="15"/></padding>
-            <HBox spacing="10" alignment="CENTER">
-               <Label text="History" styleClass="view-title"/>
+        <VBox spacing="0">
+            <!-- Custom Window Header with Drag support -->
+            <HBox fx:id="windowHeader" alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 5 10 5 10;" onMousePressed="#handleMousePressed" onMouseDragged="#handleMouseDragged">
+                <Label text="History" styleClass="view-title" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+                <Button text="✕" onAction="#handleClose" styleClass="close-button" />
             </HBox>
-            
-            <HBox spacing="15" alignment="CENTER" styleClass="filter-bar">
-                <HBox spacing="5" alignment="CENTER_LEFT">
-                    <Label text="From:" styleClass="filter-label"/>
-                    <DatePicker fx:id="startDatePicker" prefWidth="120" />
+
+             <VBox spacing="10">
+                <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
+                
+                <HBox spacing="15" alignment="CENTER" styleClass="filter-bar">
+                    <HBox spacing="5" alignment="CENTER_LEFT">
+                        <Label text="From:" styleClass="filter-label"/>
+                        <DatePicker fx:id="startDatePicker" prefWidth="120" />
+                    </HBox>
+                    <HBox spacing="5" alignment="CENTER_LEFT">
+                        <Label text="To:" styleClass="filter-label"/>
+                        <DatePicker fx:id="endDatePicker" prefWidth="120" />
+                    </HBox>
+                    <Button text="Search" onAction="#handleSearch" styleClass="action-button-small"/>
                 </HBox>
-                <HBox spacing="5" alignment="CENTER_LEFT">
-                    <Label text="To:" styleClass="filter-label"/>
-                    <DatePicker fx:id="endDatePicker" prefWidth="120" />
-                </HBox>
-                <Button text="Search" onAction="#handleSearch" styleClass="action-button-small"/>
-            </HBox>
+            </VBox>
         </VBox>
     </top>
 

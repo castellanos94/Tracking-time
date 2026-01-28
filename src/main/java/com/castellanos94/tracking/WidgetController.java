@@ -226,14 +226,15 @@ public class WidgetController {
                     getClass().getResource("history_view.fxml"));
             javafx.scene.Parent root = fxmlLoader.load();
             javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.initStyle(javafx.stage.StageStyle.DECORATED); // Allow resizing/moving normally
-            stage.setTitle("Time History");
+            stage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            stage.setTitle("History");
             stage.setAlwaysOnTop(true);
             stage.setResizable(false);
             stage.setFullScreen(false);
 
             // Apply styles
             javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
             scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
             stage.setScene(scene);
 

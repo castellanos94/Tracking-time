@@ -53,6 +53,22 @@ public class HistoryController {
     private TimeEntryService timeEntryService;
     private CategoryService categoryService;
 
+    private double xOffset = 0;
+    private double yOffset = 0;
+
+    @FXML
+    private void handleMousePressed(javafx.scene.input.MouseEvent event) {
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+    }
+
+    @FXML
+    private void handleMouseDragged(javafx.scene.input.MouseEvent event) {
+        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(event.getScreenY() - yOffset);
+    }
+
     @FXML
     public void initialize() {
 
