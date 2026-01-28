@@ -83,4 +83,11 @@ java -jar target/tracking-time-1.0-SNAPSHOT.jar
 
 ## 🏷️ Tags
 
-`javafx`, `time-tracker`, `desktop-app`, `productivity`, `freelance-tools`, `java`, `apache-derby`, `embedded-database`, `apache-poi`, `excel-export`, `csv-import`, `json-persistence`, `open-source`
+
+## 📄 License
+
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
+
+## 🤖 Acknowledgments
+
+This project was developed with the assistance of **Google's AI Assistant**, which provided code generation, debugging support, and architectural guidance throughout the development process.
