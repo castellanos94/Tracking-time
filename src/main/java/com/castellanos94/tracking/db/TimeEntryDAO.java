@@ -35,7 +35,7 @@ public class TimeEntryDAO {
         }
     }
 
-    private void update(TimeEntry entry) throws SQLException {
+    public int update(TimeEntry entry) throws SQLException {
         String sql = "UPDATE time_entries SET category_id = ?, start_time = ?, end_time = ?, description = ?, hourly_rate = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -45,16 +45,16 @@ public class TimeEntryDAO {
             pstmt.setString(4, entry.getDescription());
             pstmt.setDouble(5, entry.getHourlyRate());
             pstmt.setString(6, entry.getId());
-            pstmt.executeUpdate();
+            return pstmt.executeUpdate();
         }
     }
 
-    public void delete(TimeEntry entry) throws SQLException {
+    public int delete(TimeEntry entry) throws SQLException {
         String sql = "DELETE FROM time_entries WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, entry.getId());
-            pstmt.executeUpdate();
+            return pstmt.executeUpdate();
         }
     }
 

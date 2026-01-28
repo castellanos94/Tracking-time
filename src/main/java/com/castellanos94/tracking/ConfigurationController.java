@@ -100,9 +100,12 @@ public class ConfigurationController {
     @FXML
     private void handleDelete() {
         if (selectedCategory != null) {
-            timerService.getCategories().remove(selectedCategory);
-            selectedCategory = null;
-            categoriesTable.refresh();
+            if (Dialogs.showConfirmationDialog("Delete Category", "Are you sure you want to delete this category?",
+                    this.categoriesTable.getScene().getWindow())) {
+                timerService.getCategories().remove(selectedCategory);
+                selectedCategory = null;
+                categoriesTable.refresh();
+            }
         }
     }
 
@@ -118,6 +121,7 @@ public class ConfigurationController {
             selectedCategory.setName(nameField.getText());
             selectedCategory.setHourlyRate(Double.parseDouble(rateField.getText()));
             selectedCategory.setColor(toRGBCode(colorPicker.getValue()));
+            timerService.updateCategory(selectedCategory);
         } else {
             com.castellanos94.tracking.model.Category c = new com.castellanos94.tracking.model.Category();
             c.setName(nameField.getText());

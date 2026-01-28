@@ -1,6 +1,8 @@
 package com.castellanos94.tracking.db;
 
 import com.castellanos94.tracking.model.Category;
+import com.castellanos94.tracking.model.TimeEntry;
+
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -86,5 +88,43 @@ public class CategoryDAO {
             }
         }
         return list;
+    }
+
+    public Category getById(String id) throws SQLException {
+        String sql = "SELECT id, name, color, hourly_rate FROM categories WHERE id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Category c = new Category();
+                    c.setId(rs.getString("id"));
+                    c.setName(rs.getString("name"));
+                    c.setColor(rs.getString("color"));
+                    c.setHourlyRate(rs.getDouble("hourly_rate"));
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Category findByName(String newValue) throws SQLException {
+        String sql = "SELECT id, name, color, hourly_rate FROM categories WHERE name = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newValue);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Category c = new Category();
+                    c.setId(rs.getString("id"));
+                    c.setName(rs.getString("name"));
+                    c.setColor(rs.getString("color"));
+                    c.setHourlyRate(rs.getDouble("hourly_rate"));
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -99,27 +99,15 @@ public class ExportWizardController {
         String rangeInfo = "All History";
         if (isCustomRange) {
             if (startDatePicker.getValue() == null || endDatePicker.getValue() == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Please select both start and end dates.");
-                alert.initOwner(stage);
-                alert.showAndWait();
+                Dialogs.showExceptionDialog("Error", "Please select both start and end dates.", this.stage);
                 return;
             }
             if (startDatePicker.getValue().isAfter(endDatePicker.getValue())) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Start date must be before end date.");
-                alert.initOwner(stage);
-                alert.showAndWait();
+                Dialogs.showExceptionDialog("Error", "Start date must be before end date.", this.stage);
                 return;
             }
             if (endDatePicker.getValue().isBefore(startDatePicker.getValue())) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("End date must be after start date.");
-                alert.initOwner(stage);
-                alert.showAndWait();
+                Dialogs.showExceptionDialog("Error", "End date must be after start date.", this.stage);
                 return;
             }
             rangeInfo = String.format("From %s to %s", startDatePicker.getValue(), endDatePicker.getValue());
@@ -136,17 +124,9 @@ public class ExportWizardController {
             } else {
                 timeReportExportService.export(null, null, format, pathField.getText());
             }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Export completed successfully.");
-            alert.initOwner(stage);
-            alert.showAndWait();
+            Dialogs.showExceptionDialog("Success", "Export completed successfully.", this.stage);
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Export failed: " + e.getMessage());
-            alert.initOwner(stage);
-            alert.showAndWait();
+            Dialogs.showExceptionDialog("Error", "Export failed: " + e.getMessage(), this.stage);
         }
 
         stage.close();

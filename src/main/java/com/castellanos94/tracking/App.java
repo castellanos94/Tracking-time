@@ -31,6 +31,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> showErrorDialog(e));
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("widget.fxml"));

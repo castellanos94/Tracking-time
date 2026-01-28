@@ -106,3 +106,144 @@
 .history-list .list-cell:empty {
     -fx-background-color: transparent;
 }
+
+/* History Window Specifics */
+.history-window {
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: #444;
+    -fx-border-width: 1;
+}
+
+.modal-window {
+    -fx-background-color: #2b2b2b;
+    -fx-background-radius: 10;
+    -fx-border-color: #555;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 5);
+    -fx-padding: 20;
+}
+
+.view-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.filter-label {
+    -fx-text-fill: #ccc;
+    -fx-font-size: 12px;
+}
+
+.action-button-small {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 4 10 4 10;
+    -fx-cursor: hand;
+}
+
+.action-button-small:hover {
+    -fx-background-color: #45a049;
+}
+
+.delete-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff6b6b;
+    -fx-border-color: #ff6b6b;
+    -fx-border-radius: 5;
+    -fx-padding: 4 10 4 10;
+    -fx-cursor: hand;
+}
+
+.delete-button:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.1);
+}
+
+.secondary-button-rect {
+    -fx-background-color: #444;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+}
+
+.secondary-button-rect:hover {
+    -fx-background-color: #555;
+}
+
+.summary-label-sm {
+    -fx-text-fill: #aaa;
+    -fx-font-size: 14px;
+}
+
+.summary-value {
+    -fx-text-fill: #4CAF50;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Table View Styling for Dark Mode */
+.history-table {
+    -fx-background-color: transparent;
+    -fx-base: #1e1e1e;
+    -fx-control-inner-background: #1e1e1e;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.history-table .column-header-background {
+    -fx-background-color: #333;
+}
+
+.history-table .column-header,
+.history-table .filler {
+    -fx-background-color: #333;
+    -fx-size: 30;
+    -fx-border-color: transparent;
+}
+
+.history-table .column-header .label {
+    -fx-text-fill: #ccc;
+    -fx-font-weight: bold;
+}
+
+.history-table .table-row-cell {
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: transparent;
+    -fx-text-background-color: white;
+}
+
+.history-table .table-row-cell:odd {
+    -fx-background-color: #333;
+}
+
+.history-table .table-row-cell:selected {
+    -fx-background-color: #005a9e;
+    /* Selection Color */
+}
+
+/* DatePicker Styling (Minimal approach) */
+.date-picker .text-field {
+    -fx-background-color: #444;
+    -fx-text-fill: white;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #555;
+}
+
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #aaaaaa;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 5 8 5 8;
+}
+
+.icon-button:hover {
+    -fx-text-fill: white;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 50;
+}

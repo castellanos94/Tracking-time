@@ -84,7 +84,7 @@ public class ImportWizardController {
     @FXML
     private void handleImport() {
         if (pathField.getText() == null || pathField.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Please select a file to import.");
+            Dialogs.showExceptionDialog("Error", "Please select a file to import.", this.stage);
             return;
         }
 
@@ -98,7 +98,7 @@ public class ImportWizardController {
 
         Category selectedCategory = categoryComboBox.getSelectionModel().getSelectedItem();
         if (format == FormatExportEnum.CUSTOM && selectedCategory == null) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Default Category is required for Custom import.");
+            Dialogs.showExceptionDialog("Error", "Default Category is required for Custom import.", this.stage);
             return;
         }
 
@@ -116,13 +116,5 @@ public class ImportWizardController {
     @FXML
     private void handleCancel() {
         stage.close();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(content);
-        alert.initOwner(stage);
-        alert.showAndWait();
     }
 }

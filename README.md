@@ -2,7 +2,7 @@
 
 A lightweight desktop time tracking application built with **JavaFX** and **Apache Derby**. Designed for freelancers and professionals, it allows you to manage projects, calculate real-time earnings, and import/export detailed reports.
 
-![Time Tracker UI](https://via.placeholder.com/800x400?text=Time+Tracker+UI+Placeholder)
+![Time Tracker UI](assets/app-preview.png)
 
 ## 🏗 Architecture & Design
 
@@ -43,18 +43,19 @@ The project follows the **MVC (Model-View-Controller)** pattern with a robust se
 ### Implemented ✅
 
 *   **⏱️ Smart Timer**: Real-time tracking with activity descriptions and category selection.
-*   **📊 category Management**: Create, edit, and manage categories with custom hourly rates.
-*   **📥 Import Wizard**: Import data from **JSON**, **CSV**, **Excel (XLSX)**, and **Custom** formats (Date, Desc, Duration, Payment).
+*   **📜 History View**: Browse detailed history with date range filtering. Edit descriptions and categories inline, or delete entries with safety confirmation.
+*   **📊 Category Management**: Create, edit, and manage categories with custom hourly rates and colors.
+*   **📥 Import Wizard**: Import data from **JSON**, **CSV**, **Excel (XLSX)**, and **Custom** formats.
 *   **📤 Export Wizard**: Export your history to **Excel**, **CSV**, or **JSON** with date range filtering.
 *   **💰 Real-Time Earnings**: View daily earnings calculated instantly based on your rates.
+*   **🎨 Modern UI**: Consistent dark mode styling across all windows (Configuration, Import, Export, History). featuring borderless, transparent windows with custom controls.
 *   **💾 Robust Persistence**: Reliable SQL storage with automatic legacy data migration.
 *   **🪟 Widget UI**: Draggable, transparent, and always-on-top window for unobtrusive tracking.
 
 ### Roadmap 🚧
 
-*   **Advanced Filtering**: Enhanced history filtering in the main UI.
-*   **Entry Editing**: UI to modify past time entries.
-*   **Charts**: Visual analytics of time usage.
+*   **Charts**: Visual analytics of time usage (Weekly/Monthly breakdowns).
+*   **Cloud Sync**: Optional synchronization with cloud storage.
 
 ## 🛠 How to Run & Build
 

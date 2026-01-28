@@ -10,10 +10,13 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.castellanos94.tracking.ExportWizardController"
-      spacing="15" alignment="TOP_LEFT" style="-fx-background-color: #2c2c2c; -fx-text-fill: white;">
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+      spacing="15" alignment="TOP_LEFT" styleClass="modal-window">
+    <padding><Insets top="10" right="20" bottom="20" left="20"/></padding>
 
-    <Label text="Export Data" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" />
+    <HBox alignment="CENTER_LEFT" spacing="10">
+         <Label text="Export Data" styleClass="view-title" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+         <Button text="✕" onAction="#handleCancel" styleClass="icon-button" />
+    </HBox>
 
     <VBox spacing="5">
         <Label text="Export Path:" style="-fx-text-fill: #aaaaaa;" />

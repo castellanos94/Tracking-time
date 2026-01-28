@@ -10,11 +10,14 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.castellanos94.tracking.ConfigurationController"
-      styleClass="widget-container" spacing="10" alignment="TOP_CENTER" minWidth="400" minHeight="500">
+      styleClass="modal-window" spacing="10" alignment="TOP_CENTER" minWidth="400" minHeight="500">
 
-    <Label text="Category Configuration" styleClass="title-label" />
+    <HBox alignment="CENTER_LEFT" spacing="10">
+         <Label text="Category Configuration" styleClass="view-title" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+         <Button text="✕" onAction="#handleClose" styleClass="icon-button" />
+    </HBox>
 
-    <TableView fx:id="categoriesTable" VBox.vgrow="ALWAYS">
+    <TableView fx:id="categoriesTable" VBox.vgrow="ALWAYS" styleClass="history-table">
         <columns>
             <TableColumn fx:id="colName" text="Name" prefWidth="150"/>
             <TableColumn fx:id="colRate" text="Rate ($/hr)" prefWidth="80"/>
@@ -43,7 +46,4 @@
             <Button text="Save" onAction="#handleSave" styleClass="action-button" />
         </HBox>
     </VBox>
-
-    <Button text="Close" onAction="#handleClose" styleClass="secondary-button" maxWidth="Infinity"/>
-
 </VBox>

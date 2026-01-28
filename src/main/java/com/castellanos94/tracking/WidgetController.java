@@ -11,13 +11,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ListView;
+
 import javafx.scene.layout.VBox;
 import javafx.application.Platform;
 import javafx.util.Duration;
 import com.castellanos94.tracking.model.TimeEntry;
-import java.time.format.DateTimeFormatter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class WidgetController {
 
     @FXML
@@ -41,15 +42,8 @@ public class WidgetController {
     @FXML
     private VBox historyView;
 
-    @FXML
-    private ListView<TimeEntry> historyList;
-
-    @FXML
-    private Button historyButton;
-
     private final TimerService timerService = TimerService.getInstance();
     private Timeline timeline;
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     @FXML
     private void initialize() {
@@ -70,38 +64,6 @@ public class WidgetController {
         if (!timerService.getCategories().isEmpty()) {
             categoryComboBox.getSelectionModel().selectFirst();
         }
-
-        // Setup History List
-        historyList.setItems(timerService.getHistory());
-        historyList.setCellFactory(param -> new ListCell<TimeEntry>() {
-            @Override
-            protected void updateItem(TimeEntry item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    String projectName = "Unknown";
-                    // Find project name (inefficient but works for small list)
-                    for (Category p : timerService.getCategories()) {
-                        if (p.getId().equals(item.getCategoryId())) {
-                            projectName = p.getName();
-                            break;
-                        }
-                    }
-                    long duration = item.getDurationSeconds();
-                    long mm = duration / 60;
-
-                    String desc = item.getDescription();
-                    if (desc == null || desc.isBlank()) {
-                        setText(String.format("%s - %s (%d min)", projectName,
-                                item.getStartTime().format(timeFormatter), mm));
-                    } else {
-                        setText(String.format("%s: %s - %s (%d min)", projectName, desc,
-                                item.getStartTime().format(timeFormatter), mm));
-                    }
-                }
-            }
-        });
 
         // Listen for history changes to update total
         timerService.getHistory().addListener((javafx.collections.ListChangeListener.Change<? extends TimeEntry> c) -> {
@@ -171,59 +133,31 @@ public class WidgetController {
     }
 
     @FXML
-    private void handleToggleHistory() {
-        if (historyView.isVisible()) {
-            // Hide History
-            historyView.setVisible(false);
-            historyView.setManaged(false);
-            timerView.setVisible(true);
-            timerView.setManaged(true);
-            historyButton.setText("Show History");
-        } else {
-            // Show History
-            historyView.setVisible(true);
-            historyView.setManaged(true);
-            timerView.setVisible(false);
-            timerView.setManaged(false);
-            historyButton.setText("Back to Timer");
-        }
-    }
-
-    @FXML
-    private void handleCollapseHistory() {
-        if (historyList.isVisible()) {
-            historyList.setVisible(false);
-            historyList.setManaged(false);
-        } else {
-            historyList.setVisible(true);
-            historyList.setManaged(true);
-        }
-
-        // Auto-resize window
-        if (historyView.getScene() != null && historyView.getScene().getWindow() instanceof javafx.stage.Stage) {
-            javafx.stage.Stage stage = (javafx.stage.Stage) historyView.getScene().getWindow();
-            stage.sizeToScene();
-        }
-    }
-
-    @FXML
     private void handleImport() {
         try {
             javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
                     getClass().getResource("import_wizard.fxml"));
             javafx.scene.Parent root = fxmlLoader.load();
             javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.initStyle(javafx.stage.StageStyle.UTILITY);
+            stage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
             stage.setAlwaysOnTop(true);
             stage.setTitle("Import Data");
-            stage.setScene(new javafx.scene.Scene(root));
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            scene.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    stage.close();
+                }
+            });
+            stage.setScene(scene);
 
             ImportWizardController controller = fxmlLoader.getController();
             controller.setStage(stage);
 
             stage.show();
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            log.error("Error loading import wizard", e);
         }
     }
 
@@ -234,17 +168,25 @@ public class WidgetController {
                     getClass().getResource("export_wizard.fxml"));
             javafx.scene.Parent root = fxmlLoader.load();
             javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.initStyle(javafx.stage.StageStyle.UTILITY);
+            stage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
             stage.setAlwaysOnTop(true);
             stage.setTitle("Export Data");
-            stage.setScene(new javafx.scene.Scene(root));
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            scene.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    stage.close();
+                }
+            });
+            stage.setScene(scene);
 
             ExportWizardController controller = fxmlLoader.getController();
             controller.setStage(stage);
 
             stage.show();
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            log.error("Error loading export wizard", e);
         }
     }
 
@@ -255,17 +197,49 @@ public class WidgetController {
                     getClass().getResource("configuration.fxml"));
             javafx.scene.Parent root = fxmlLoader.load();
             javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.initStyle(javafx.stage.StageStyle.UTILITY);
+            stage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
             stage.setAlwaysOnTop(true);
             stage.setTitle("Configuration");
-            stage.setScene(new javafx.scene.Scene(root));
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            scene.setOnKeyPressed(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    stage.close();
+                }
+            });
+            stage.setScene(scene);
 
             ConfigurationController controller = fxmlLoader.getController();
             controller.setStage(stage);
 
             stage.show();
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            log.error("Error loading configuration", e);
+        }
+    }
+
+    @FXML
+    private void handleOpenHistoryWindow() {
+        try {
+            javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("history_view.fxml"));
+            javafx.scene.Parent root = fxmlLoader.load();
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initStyle(javafx.stage.StageStyle.DECORATED); // Allow resizing/moving normally
+            stage.setTitle("Time History");
+            stage.setAlwaysOnTop(true);
+            stage.setResizable(false);
+            stage.setFullScreen(false);
+
+            // Apply styles
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            stage.setScene(scene);
+
+            stage.show();
+        } catch (java.io.IOException e) {
+            log.error("Error loading history", e);
         }
     }
 

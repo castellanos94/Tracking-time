@@ -35,8 +35,7 @@
     </VBox>
 
     <VBox fx:id="historyView" spacing="5" alignment="CENTER">
-        <Label text="Recent History" onMouseClicked="#handleCollapseHistory" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
-        <ListView fx:id="historyList" prefHeight="150" styleClass="history-list"/>
+        <Label text="History" onMouseClicked="#handleOpenHistoryWindow" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
     </VBox>
 
 </VBox>

@@ -196,4 +196,14 @@ public class TimerService {
             log.error("Migration failed", e);
         }
     }
+
+    public void updateCategory(Category selectedCategory) {
+        try {
+            categoryDAO.update(selectedCategory);
+            categories.set(categories.indexOf(selectedCategory), selectedCategory);
+        } catch (SQLException e) {
+            log.error("Failed to update category", e);
+            throw new RuntimeException("Failed to update category: " + e.getMessage(), e);
+        }
+    }
 }
