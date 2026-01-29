@@ -4,7 +4,6 @@ import com.castellanos94.tracking.model.Category;
 import com.castellanos94.tracking.model.FormatExportEnum;
 import com.castellanos94.tracking.service.TimerService;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.RadioButton;
@@ -13,6 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
+import com.castellanos94.tracking.service.TimeReportImportService;
 import java.io.File;
 
 @Slf4j
@@ -108,7 +108,14 @@ public class ImportWizardController {
             log.info("Default Category: " + selectedCategory.getName());
         }
 
-        // TODO: Call Import Service here
+        try {
+            TimeReportImportService service = new TimeReportImportService();
+            service.importData(new File(pathField.getText()), format, selectedCategory);
+            Dialogs.showInformationDialog("Success", "Import completed successfully.", this.stage);
+        } catch (Exception e) {
+            log.error("Import failed", e);
+            Dialogs.showExceptionDialog("Import Failed", e.getMessage(), this.stage);
+        }
 
         stage.close();
     }

@@ -26,4 +26,13 @@ public class Dialogs {
         return result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK;
     }
 
+    public static void showInformationDialog(String title, String message, Window owner) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.initOwner(owner);
+        alert.showAndWait();
+    }
+
 }

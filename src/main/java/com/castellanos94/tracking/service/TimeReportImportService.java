@@ -66,12 +66,6 @@ public class TimeReportImportService {
         log.info("Parsed {} entries. Saving to database...", entries.size());
         for (TimeEntry entry : entries) {
             try {
-                // Ensure category exists or use default/create logic if needed.
-                // For now assuming ID is present in JSON, or name in others.
-                // Re-mapping logic might be complex, keeping simple for this iteration.
-                if (entry.getId() == null) {
-                    entry.setId(UUID.randomUUID().toString());
-                }
                 timeEntryDAO.save(entry);
             } catch (SQLException e) {
                 log.error("Failed to save entry: " + entry, e);
@@ -137,44 +131,48 @@ public class TimeReportImportService {
     }
 
     private List<TimeEntry> parseCustom(File file, Category defaultCategory) throws IOException {
-        // Custom Format: Date, Description, Time (Hours), Payment
+        // Custom Format: Fecha, Actividad, Tiempo (hh24:mi)
         List<TimeEntry> entries = new ArrayList<>();
+        java.time.format.DateTimeFormatter dateFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         try (BufferedReader br = Files.newBufferedReader(file.toPath())) {
             String line;
-            // Assuming no header or maybe first line check? Let's check if first line looks
-            // like header
+            boolean firstLine = true;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length < 4)
-                    continue;
+                if (firstLine) {
+                    firstLine = false;
+                    // Check if it's a header line
+                    if (line.toLowerCase().startsWith("fecha")) {
+                        continue;
+                    }
+                }
 
-                // Simple heuristic to skip header
-                if (parts[0].equalsIgnoreCase("date") || parts[0].equalsIgnoreCase("fecha"))
+                String[] parts = line.split(",");
+                if (parts.length < 3)
                     continue;
 
                 try {
                     String dateStr = parts[0].trim();
                     String desc = parts[1].trim();
-                    double hours = Double.parseDouble(parts[2].trim());
-                    double payment = Double.parseDouble(parts[3].trim());
+                    String timeStr = parts[2].trim();
 
                     TimeEntry entry = new TimeEntry();
-                    entry.setId(UUID.randomUUID().toString());
                     entry.setCategoryId(defaultCategory.getId());
                     entry.setDescription(desc);
+                    // Use default hourly rate from category if available
+                    entry.setHourlyRate(defaultCategory.getHourlyRate());
 
-                    // Calculate Rate based on payment and hours
-                    if (hours > 0) {
-                        entry.setHourlyRate(payment / hours);
-                    } else {
-                        entry.setHourlyRate(0.0);
-                    }
+                    // Parse Date
+                    LocalDate date = LocalDate.parse(dateStr, dateFormatter);
 
-                    // Mock Start/End times
-                    LocalDate date = LocalDate.parse(dateStr); // Assuming ISO format for simplicity, user might need
-                                                               // formatter
-                    LocalDateTime start = date.atTime(9, 0); // Start at 9 AM
-                    LocalDateTime end = start.plusMinutes((long) (hours * 60));
+                    // Parse Time (Duration) H:mm
+                    String[] timeParts = timeStr.split(":");
+                    int hours = Integer.parseInt(timeParts[0]);
+                    int minutes = Integer.parseInt(timeParts[1]);
+
+                    // Default start time 9:00 AM
+                    LocalDateTime start = date.atTime(9, 0);
+                    LocalDateTime end = start.plusHours(hours).plusMinutes(minutes);
 
                     entry.setStartTime(start);
                     entry.setEndTime(end);
@@ -207,7 +205,6 @@ public class TimeReportImportService {
 
         for (TimeReport r : reports) {
             TimeEntry t = new TimeEntry();
-            t.setId(UUID.randomUUID().toString());
             t.setDescription(r.getDescription());
             t.setStartTime(LocalDateTime.parse(r.getStart()));
             if (r.getEnd() != null && !r.getEnd().isEmpty()) {

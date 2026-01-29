@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Duration;
+import lombok.ToString;
 
+@ToString
 public class TimeEntry {
     private String id;
     private String categoryId;
