@@ -56,6 +56,10 @@ public class App extends Application {
         });
 
         scene.getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+
+        // Set application icon
+        stage.getIcons().add(new javafx.scene.image.Image(App.class.getResourceAsStream("app_icon.png")));
+
         stage.setScene(scene);
         stage.show();
     }
