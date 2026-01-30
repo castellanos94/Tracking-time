@@ -12,6 +12,7 @@ The project follows the **MVC (Model-View-Controller)** pattern with a robust se
 
 *   **Model**:
     *   `Category`: Represents a work category (name, color, hourly rate).
+    *   `Project`: Represents a project entity with Name, Description, and Owner.
     *   `TimeEntry`: Records a work session (start/end time, description, historical rate).
     *   `TimeReport`: DTO for report generation and import/export.
 *   **View**:
@@ -43,10 +44,11 @@ The project follows the **MVC (Model-View-Controller)** pattern with a robust se
 ### Implemented ✅
 
 *   **⏱️ Smart Timer**: Real-time tracking with activity descriptions and category selection.
-*   **📜 History View**: Browse detailed history with date range filtering. Edit descriptions and categories inline, or delete entries with safety confirmation.
+*   **📜 History View**: Browse detailed history with date range filtering. Edit descriptions, categories, and **Projects** inline, or delete entries with safety confirmation.
 *   **📊 Category Management**: Create, edit, and manage categories with custom hourly rates and colors.
+*   **📂 Project Management**: Create and manage projects with dedicated "Owner" fields.
 *   **📥 Import Wizard**: Import data from **JSON**, **CSV**, **Excel (XLSX)**, and **Custom** formats.
-*   **📤 Export Wizard**: Export your history to **Excel**, **CSV**, or **JSON** with date range filtering.
+*   **📤 Export Wizard**: Export your history to **Excel**, **CSV**, or **JSON** (including Project Name and Owner) with date range filtering.
 *   **💰 Real-Time Earnings**: View daily earnings calculated instantly based on your rates.
 *   **🎨 Modern UI**: Consistent dark mode styling across all windows (Configuration, Import, Export, History). featuring borderless, transparent windows with custom controls.
 *   **💾 Robust Persistence**: Reliable SQL storage with automatic legacy data migration.
