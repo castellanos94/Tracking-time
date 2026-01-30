@@ -15,7 +15,7 @@
 
     <HBox alignment="CENTER_LEFT" spacing="10">
          <Label text="Export Data" styleClass="view-title" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-         <Button text="✕" onAction="#handleCancel" styleClass="icon-button" />
+         <Button text="✕" onAction="#handleCancel" styleClass="close-button" />
     </HBox>
 
     <VBox spacing="5">

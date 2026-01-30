@@ -19,7 +19,7 @@
         <Button text="📥" onAction="#handleImport" styleClass="icon-button" />
         <Button text="📤" onAction="#handleExport" styleClass="icon-button" />
         <Button text="⚙" onAction="#handleOpenSettings" styleClass="icon-button" />
-        <Button text="✕" onAction="#handleClose" styleClass="icon-button" />
+        <Button text="✕" onAction="#handleClose" styleClass="close-button" />
     </HBox>
 
     <!-- Timer View -->
