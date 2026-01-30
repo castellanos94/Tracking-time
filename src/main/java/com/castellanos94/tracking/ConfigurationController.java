@@ -2,6 +2,7 @@ package com.castellanos94.tracking;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
+import com.castellanos94.tracking.model.Project;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -33,6 +34,26 @@ public class ConfigurationController {
 
     @FXML
     private ColorPicker colorPicker;
+
+    // Project Tab FXML
+    @FXML
+    private TableView<Project> projectsTable;
+    @FXML
+    private TableColumn<Project, String> colProjectName;
+    @FXML
+    private TableColumn<Project, String> colProjectDesc;
+    @FXML
+    private TableColumn<Project, String> colProjectOwner;
+    @FXML
+    private TableColumn<Project, String> colProjectStatus;
+    @FXML
+    private TextField projectNameField;
+    @FXML
+    private TextField projectDescField;
+    @FXML
+    private TextField projectOwnerField;
+
+    private Project selectedProject;
 
     private Stage stage;
     private com.castellanos94.tracking.service.TimerService timerService;
@@ -75,6 +96,22 @@ public class ConfigurationController {
                 rateField.setText(String.valueOf(c.getHourlyRate()));
                 colorPicker.setValue(javafx.scene.paint.Color.web(safeColor(c.getColor())));
                 selectedCategory = c;
+            }
+        });
+
+        // --- Projects Setup ---
+        projectsTable.setItems(timerService.getProjects());
+        colProjectName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("name"));
+        colProjectDesc.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("description"));
+        colProjectOwner.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("owner"));
+        colProjectStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("status"));
+
+        projectsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                selectedProject = newVal;
+                projectNameField.setText(selectedProject.getName());
+                projectDescField.setText(selectedProject.getDescription());
+                projectOwnerField.setText(selectedProject.getOwner());
             }
         });
     }
@@ -145,5 +182,52 @@ public class ConfigurationController {
                 (int) (color.getRed() * 255),
                 (int) (color.getGreen() * 255),
                 (int) (color.getBlue() * 255));
+    }
+
+    // --- Project Handlers ---
+
+    @FXML
+    private void handleProjectClear() {
+        projectNameField.clear();
+        projectDescField.clear();
+        projectOwnerField.clear();
+        selectedProject = null;
+        projectsTable.getSelectionModel().clearSelection();
+    }
+
+    @FXML
+    private void handleProjectDelete() {
+        if (selectedProject != null) {
+            if (Dialogs.showConfirmationDialog("Delete Project",
+                    "Are you sure you want to delete project '" + selectedProject.getName() + "'?",
+                    this.projectsTable.getScene().getWindow())) {
+                timerService.deleteProject(selectedProject); // Soft delete likely
+                handleProjectClear();
+            }
+        }
+    }
+
+    @FXML
+    private void handleProjectSave() {
+        if (projectNameField.getText().trim().isEmpty()) {
+            projectNameField.requestFocus();
+            projectNameField.setStyle("-fx-background-color: red;");
+            return;
+        }
+        projectNameField.setStyle("-fx-background-color: white;");
+
+        if (selectedProject != null) {
+            selectedProject.setName(projectNameField.getText());
+            selectedProject.setDescription(projectDescField.getText());
+            selectedProject.setOwner(projectOwnerField.getText());
+            timerService.updateProject(selectedProject);
+            projectsTable.refresh();
+        } else {
+            Project p = new Project(projectNameField.getText());
+            p.setDescription(projectDescField.getText());
+            p.setOwner(projectOwnerField.getText());
+            timerService.addProject(p);
+        }
+        handleProjectClear();
     }
 }

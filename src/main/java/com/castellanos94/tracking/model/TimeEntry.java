@@ -16,6 +16,8 @@ public class TimeEntry {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String description;
+    private String projectId;
+    private String projectName;
 
     public TimeEntry() {
     }
@@ -97,5 +99,21 @@ public class TimeEntry {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

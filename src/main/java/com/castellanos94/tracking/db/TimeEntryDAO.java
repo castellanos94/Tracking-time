@@ -22,7 +22,7 @@ public class TimeEntryDAO {
     }
 
     private void create(TimeEntry entry) throws SQLException {
-        String sql = "INSERT INTO time_entries (id, category_id, start_time, end_time, description, hourly_rate) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO time_entries (id, category_id, start_time, end_time, description, hourly_rate, project_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, entry.getId());
@@ -31,12 +31,13 @@ public class TimeEntryDAO {
             pstmt.setTimestamp(4, entry.getEndTime() != null ? Timestamp.valueOf(entry.getEndTime()) : null);
             pstmt.setString(5, entry.getDescription());
             pstmt.setDouble(6, entry.getHourlyRate());
+            pstmt.setString(7, entry.getProjectId());
             pstmt.executeUpdate();
         }
     }
 
     public int update(TimeEntry entry) throws SQLException {
-        String sql = "UPDATE time_entries SET category_id = ?, start_time = ?, end_time = ?, description = ?, hourly_rate = ? WHERE id = ?";
+        String sql = "UPDATE time_entries SET category_id = ?, start_time = ?, end_time = ?, description = ?, hourly_rate = ?, project_id = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, entry.getCategoryId());
@@ -44,7 +45,8 @@ public class TimeEntryDAO {
             pstmt.setTimestamp(3, entry.getEndTime() != null ? Timestamp.valueOf(entry.getEndTime()) : null);
             pstmt.setString(4, entry.getDescription());
             pstmt.setDouble(5, entry.getHourlyRate());
-            pstmt.setString(6, entry.getId());
+            pstmt.setString(6, entry.getProjectId());
+            pstmt.setString(7, entry.getId());
             return pstmt.executeUpdate();
         }
     }
@@ -60,7 +62,7 @@ public class TimeEntryDAO {
 
     public List<TimeEntry> findAll() throws SQLException {
         List<TimeEntry> list = new ArrayList<>();
-        String sql = "SELECT * FROM time_entries ORDER BY start_time DESC";
+        String sql = "SELECT te.*, p.name as project_name FROM time_entries te LEFT JOIN projects p ON te.project_id = p.id ORDER BY te.start_time DESC";
         try (Connection conn = DatabaseManager.getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
@@ -74,7 +76,7 @@ public class TimeEntryDAO {
 
     public List<TimeEntry> findByRange(LocalDateTime start, LocalDateTime end) throws SQLException {
         List<TimeEntry> list = new ArrayList<>();
-        String sql = "SELECT * FROM time_entries WHERE start_time >= ? AND start_time < ? ORDER BY start_time DESC";
+        String sql = "SELECT te.*, p.name as project_name FROM time_entries te LEFT JOIN projects p ON te.project_id = p.id WHERE te.start_time >= ? AND te.start_time < ? ORDER BY te.start_time DESC";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setTimestamp(1, Timestamp.valueOf(start));
@@ -90,7 +92,7 @@ public class TimeEntryDAO {
 
     public List<TimeEntry> findByDate(java.time.LocalDate date) throws SQLException {
         List<TimeEntry> list = new ArrayList<>();
-        String sql = "SELECT * FROM time_entries WHERE start_time >= ? AND start_time < ? ORDER BY start_time DESC";
+        String sql = "SELECT te.*, p.name as project_name FROM time_entries te LEFT JOIN projects p ON te.project_id = p.id WHERE te.start_time >= ? AND te.start_time < ? ORDER BY te.start_time DESC";
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
 
@@ -118,6 +120,8 @@ public class TimeEntryDAO {
         }
         entry.setDescription(rs.getString("description"));
         entry.setHourlyRate(rs.getDouble("hourly_rate"));
+        entry.setProjectId(rs.getString("project_id"));
+        entry.setProjectName(rs.getString("project_name"));
         return entry;
     }
 }

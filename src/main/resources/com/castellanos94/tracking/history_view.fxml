@@ -49,6 +49,7 @@
                     <TableColumn fx:id="endColumn" text="End" prefWidth="80"/>
                     <TableColumn fx:id="durationColumn" text="Duration" prefWidth="80"/>
                     <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100"/>
+                    <TableColumn fx:id="projectColumn" text="Project" prefWidth="120"/>
                     <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="200"/>
                     <TableColumn fx:id="hourlyRateColumn" text="Hourly Rate" prefWidth="100"/>
                 </columns>

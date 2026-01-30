@@ -1,6 +1,7 @@
 package com.castellanos94.tracking;
 
 import com.castellanos94.tracking.model.Category;
+import com.castellanos94.tracking.model.Project;
 import com.castellanos94.tracking.service.TimerService;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -29,6 +30,9 @@ public class WidgetController {
 
     @FXML
     private TextField activityField;
+
+    @FXML
+    private ComboBox<Project> projectComboBox;
 
     @FXML
     private ComboBox<Category> categoryComboBox;
@@ -64,6 +68,31 @@ public class WidgetController {
         if (!timerService.getCategories().isEmpty()) {
             categoryComboBox.getSelectionModel().selectFirst();
         }
+
+        // Setup Project Combo
+        projectComboBox.setItems(timerService.getProjects());
+        projectComboBox.setCellFactory(param -> new ListCell<Project>() {
+            @Override
+            protected void updateItem(Project item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getName());
+                }
+            }
+        });
+        projectComboBox.setButtonCell(new ListCell<Project>() {
+            @Override
+            protected void updateItem(Project item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getName());
+                }
+            }
+        });
 
         // Listen for history changes to update total
         timerService.getHistory().addListener((javafx.collections.ListChangeListener.Change<? extends TimeEntry> c) -> {
@@ -120,10 +149,12 @@ public class WidgetController {
             activityField.clear();
         } else {
             // Start
-            Category selected = categoryComboBox.getSelectionModel().getSelectedItem();
-            if (selected != null) {
+            Category selectedCategory = categoryComboBox.getSelectionModel().getSelectedItem();
+            Project selectedProject = projectComboBox.getSelectionModel().getSelectedItem();
+
+            if (selectedCategory != null) {
                 String activity = activityField.getText();
-                timerService.startTimer(selected, activity);
+                timerService.startTimer(selectedCategory, selectedProject, activity);
                 timeline.play();
                 toggleButton.setText("Stop");
                 toggleButton.getStyleClass().add("stop-button");

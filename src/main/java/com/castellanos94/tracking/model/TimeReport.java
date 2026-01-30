@@ -12,4 +12,7 @@ public class TimeReport {
     private double rate;
     private double amount;
 
+    private String projectName; // [NEW]
+    private String projectOwner; // [NEW]
+
 }

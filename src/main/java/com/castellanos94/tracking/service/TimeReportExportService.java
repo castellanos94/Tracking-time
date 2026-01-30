@@ -26,7 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TimeReportExportService {
     private final TimeReportDAO timeReportDAO;
-    private final List<String> header = Arrays.asList("category", "description", "start", "end", "hours", "rate",
+    private final List<String> header = Arrays.asList("project", "owner", "category", "description", "start", "end",
+            "hours", "rate",
             "amount");
 
     public TimeReportExportService() {
@@ -86,15 +87,18 @@ public class TimeReportExportService {
                 row.createCell(i).setCellValue(header.get(i));
             }
             int rowNum = 1;
+
             for (TimeReport timeReport : timeReports) {
                 row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(timeReport.getCategory());
-                row.createCell(1).setCellValue(timeReport.getDescription());
-                row.createCell(2).setCellValue(timeReport.getStart());
-                row.createCell(3).setCellValue(timeReport.getEnd());
-                row.createCell(4).setCellValue(timeReport.getHours());
-                row.createCell(5).setCellValue(timeReport.getRate());
-                row.createCell(6).setCellValue(timeReport.getAmount());
+                row.createCell(0).setCellValue(timeReport.getProjectName());
+                row.createCell(1).setCellValue(timeReport.getProjectOwner());
+                row.createCell(2).setCellValue(timeReport.getCategory());
+                row.createCell(3).setCellValue(timeReport.getDescription());
+                row.createCell(4).setCellValue(timeReport.getStart());
+                row.createCell(5).setCellValue(timeReport.getEnd());
+                row.createCell(6).setCellValue(timeReport.getHours());
+                row.createCell(7).setCellValue(timeReport.getRate());
+                row.createCell(8).setCellValue(timeReport.getAmount());
             }
             try (FileOutputStream fileOut = new FileOutputStream(path)) {
                 workbook.write(fileOut);
@@ -108,8 +112,10 @@ public class TimeReportExportService {
         content.append(String.join(",", header));
         content.append("\n");
         for (TimeReport timeReport : timeReports) {
-            content.append(timeReport.getCategory()).append(",");
-            content.append(timeReport.getDescription()).append(",");
+            content.append(escapeCSV(timeReport.getProjectName())).append(",");
+            content.append(escapeCSV(timeReport.getProjectOwner())).append(",");
+            content.append(escapeCSV(timeReport.getCategory())).append(",");
+            content.append(escapeCSV(timeReport.getDescription())).append(",");
             content.append(timeReport.getStart()).append(",");
             content.append(timeReport.getEnd()).append(",");
             content.append(timeReport.getHours()).append(",");
@@ -118,5 +124,14 @@ public class TimeReportExportService {
             content.append("\n");
         }
         Files.write(Paths.get(path), content.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String escapeCSV(String value) {
+        if (value == null)
+            return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }

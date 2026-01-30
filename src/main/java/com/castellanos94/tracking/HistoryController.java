@@ -1,8 +1,11 @@
 package com.castellanos94.tracking;
 
 import com.castellanos94.tracking.model.TimeEntry;
+import com.castellanos94.tracking.model.Project; // [NEW]
 import com.castellanos94.tracking.service.CategoryService;
+import com.castellanos94.tracking.service.ProjectService;
 import com.castellanos94.tracking.service.TimeEntryService;
+import com.castellanos94.tracking.service.TimerService; // [NEW]
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,6 +40,8 @@ public class HistoryController {
     @FXML
     private TableColumn<TimeEntry, String> categoryColumn;
     @FXML
+    private TableColumn<TimeEntry, String> projectColumn;
+    @FXML
     private TableColumn<TimeEntry, String> descriptionColumn;
     @FXML
     private TableColumn<TimeEntry, String> hourlyRateColumn;
@@ -52,6 +57,7 @@ public class HistoryController {
 
     private TimeEntryService timeEntryService;
     private CategoryService categoryService;
+    private ProjectService projectService;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -75,6 +81,7 @@ public class HistoryController {
         // Initial load
         timeEntryService = new TimeEntryService();
         categoryService = new CategoryService();
+        projectService = new ProjectService();
         // Default to today
         startDatePicker.setValue(LocalDate.now());
         endDatePicker.setValue(LocalDate.now());
@@ -106,6 +113,50 @@ public class HistoryController {
 
         categoryColumn.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().getCategoryName());
+        });
+
+        projectColumn.setCellValueFactory(cellData -> {
+            String projectName = cellData.getValue().getProjectName();
+            return new SimpleStringProperty(projectName != null ? projectName : "");
+        });
+
+        // Create a list of project names for the ComboBox
+        ObservableList<String> projectNames = FXCollections
+                .observableArrayList(projectService.getProjects().stream().map(Project::getName).toList());
+
+        projectColumn.setCellFactory(javafx.scene.control.cell.ComboBoxTableCell.forTableColumn(projectNames));
+
+        projectColumn.setOnEditCommit(event -> {
+            TimeEntry entry = event.getRowValue();
+            String newProjectName = event.getNewValue();
+
+            if (newProjectName == null || newProjectName.isEmpty()) {
+                entry.setProjectId(null);
+                entry.setProjectName(null);
+            } else {
+                Project selectedProject = TimerService.getInstance().getProjects().stream()
+                        .filter(p -> p.getName().equals(newProjectName))
+                        .findFirst()
+                        .orElse(null);
+
+                if (selectedProject != null) {
+                    entry.setProjectId(selectedProject.getId());
+                    entry.setProjectName(selectedProject.getName());
+                } else {
+                    // Should not happen if selecting from list, but handle anyway
+                    log.warn("Project not found: " + newProjectName);
+                    return;
+                }
+            }
+
+            if (timeEntryService.update(entry)) {
+                log.info("Updated project to: " + entry.getProjectName());
+            } else {
+                log.error("Error updating project");
+                Dialogs.showExceptionDialog("Error updating project", "Error updating project",
+                        this.historyTable.getScene().getWindow());
+            }
+            historyTable.refresh();
         });
         categoryColumn.setCellFactory(
                 javafx.scene.control.cell.ComboBoxTableCell

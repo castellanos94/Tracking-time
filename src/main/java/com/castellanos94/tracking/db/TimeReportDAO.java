@@ -12,13 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 public class TimeReportDAO {
     public List<TimeReport> findAll() throws SQLException {
         List<TimeReport> list = new ArrayList<>();
-        String sql = "SELECT start_time, end_time, description, time_entries.hourly_rate, COALESCE(categories.name, 'No Category') AS category_name, "
-                +
-                "{fn TIMESTAMPDIFF(SQL_TSI_SECOND, start_time, end_time)} / 3600.0 AS hours, " +
+        String sql = "SELECT start_time, end_time, time_entries.description, time_entries.hourly_rate, COALESCE(categories.name, 'No Category') AS category_name, "
+                + "COALESCE(projects.name, '') AS project_name, COALESCE(projects.owner, '') AS project_owner, "
+                + "{fn TIMESTAMPDIFF(SQL_TSI_SECOND, start_time, end_time)} / 3600.0 AS hours, " +
                 "({fn TIMESTAMPDIFF(SQL_TSI_SECOND, start_time, end_time)} / 3600.0) * time_entries.hourly_rate AS amount "
-                +
-                "FROM time_entries LEFT JOIN categories ON time_entries.category_id = categories.id " +
-                "ORDER BY start_time";
+                + "FROM time_entries LEFT JOIN categories ON time_entries.category_id = categories.id "
+                + "LEFT JOIN projects ON time_entries.project_id = projects.id "
+                + "ORDER BY start_time";
 
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -35,13 +35,13 @@ public class TimeReportDAO {
 
     public List<TimeReport> findAll(java.time.LocalDateTime start, java.time.LocalDateTime end) throws SQLException {
         List<TimeReport> list = new ArrayList<>();
-        String sql = "SELECT start_time, end_time, description, time_entries.hourly_rate, COALESCE(categories.name, 'No Category') AS category_name, "
-                +
-                "{fn TIMESTAMPDIFF(SQL_TSI_SECOND, start_time, end_time)} / 3600.0 AS hours, " +
+        String sql = "SELECT start_time, end_time, time_entries.description, time_entries.hourly_rate, COALESCE(categories.name, 'No Category') AS category_name, "
+                + "COALESCE(projects.name, '') AS project_name, COALESCE(projects.owner, '') AS project_owner, "
+                + "{fn TIMESTAMPDIFF(SQL_TSI_SECOND, start_time, end_time)} / 3600.0 AS hours, " +
                 "({fn TIMESTAMPDIFF(SQL_TSI_SECOND, start_time, end_time)} / 3600.0) * time_entries.hourly_rate AS amount "
-                +
-                "FROM time_entries LEFT JOIN categories ON time_entries.category_id = categories.id " +
-                "WHERE start_time >= ? AND end_time <= ? ORDER BY start_time";
+                + "FROM time_entries LEFT JOIN categories ON time_entries.category_id = categories.id "
+                + "LEFT JOIN projects ON time_entries.project_id = projects.id "
+                + "WHERE start_time >= ? AND end_time <= ? ORDER BY start_time";
 
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -62,6 +62,8 @@ public class TimeReportDAO {
         TimeReport report = new TimeReport();
         try {
             report.setCategory(rs.getString("category_name"));
+            report.setProjectName(rs.getString("project_name"));
+            report.setProjectOwner(rs.getString("project_owner"));
             report.setDescription(rs.getString("description"));
             report.setStart(rs.getTimestamp("start_time").toLocalDateTime().toString());
             report.setEnd(rs.getTimestamp("end_time") != null ? rs.getTimestamp("end_time").toLocalDateTime().toString()

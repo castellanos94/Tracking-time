@@ -29,6 +29,7 @@
         <TextField fx:id="activityField" promptText="What are you working on?" styleClass="text-input" />
 
         <HBox spacing="10" alignment="CENTER">
+            <ComboBox fx:id="projectComboBox" promptText="Select Project (Optional)" prefWidth="180"/>
             <ComboBox fx:id="categoryComboBox" promptText="Select Category" />
             <Button fx:id="toggleButton" text="Start" onAction="#handleToggleTimer" styleClass="action-button" />
         </HBox>

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import com.castellanos94.tracking.model.Project;
+import com.castellanos94.tracking.db.ProjectDAO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -21,10 +23,12 @@ public class TimerService {
 
     private static TimerService instance;
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
+    private final ObservableList<Project> projects = FXCollections.observableArrayList();
     private final ObservableList<TimeEntry> history = FXCollections.observableArrayList();
 
     private TimeEntry currentEntry;
     private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final ProjectDAO projectDAO = new ProjectDAO();
     private final TimeEntryDAO timeEntryDAO = new TimeEntryDAO();
 
     // Legacy JSON support for migration
@@ -44,6 +48,10 @@ public class TimerService {
     }
 
     public void startTimer(Category category, String description) {
+        startTimer(category, null, description);
+    }
+
+    public void startTimer(Category category, Project project, String description) {
         if (currentEntry != null) {
             stopTimer(); // specific behavior: auto-stop previous
         }
@@ -52,6 +60,11 @@ public class TimerService {
 
         currentEntry = new TimeEntry(category.getId(), LocalDateTime.now(), category.getHourlyRate());
         currentEntry.setDescription(description);
+        currentEntry.setCategoryName(category.getName()); // Optimization for display
+        if (project != null) {
+            currentEntry.setProjectId(project.getId());
+            currentEntry.setProjectName(project.getName());
+        }
         try {
             timeEntryDAO.save(currentEntry);
         } catch (SQLException e) {
@@ -90,6 +103,10 @@ public class TimerService {
         return categories;
     }
 
+    public ObservableList<Project> getProjects() {
+        return projects;
+    }
+
     public void addCategory(Category c) {
         for (Category category : categories) {
             if (category.getName().equals(c.getName())) {
@@ -122,6 +139,7 @@ public class TimerService {
         try {
             // 1. Load from DB
             categories.setAll(categoryDAO.findAll());
+            projects.setAll(projectDAO.findAll());
             // Only load today's history for the UI
             history.setAll(timeEntryDAO.findByDate(java.time.LocalDate.now()));
 
@@ -204,6 +222,51 @@ public class TimerService {
         } catch (SQLException e) {
             log.error("Failed to update category", e);
             throw new RuntimeException("Failed to update category: " + e.getMessage(), e);
+        }
+    }
+
+    public void addProject(Project p) {
+        for (Project project : projects) {
+            if (project.getName().equals(p.getName())) {
+                // Might want to allow same name? assuming unique names for now.
+                log.warn("Project already exists: " + p.getName());
+                return;
+            }
+        }
+        try {
+            projectDAO.save(p);
+            projects.add(p);
+        } catch (Exception e) {
+            log.error("Failed to add project", e);
+            throw new RuntimeException("Failed to add project", e);
+        }
+    }
+
+    public void updateProject(Project p) {
+        try {
+            projectDAO.update(p);
+            int idx = -1;
+            for (int i = 0; i < projects.size(); i++) {
+                if (projects.get(i).getId().equals(p.getId())) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx >= 0)
+                projects.set(idx, p);
+        } catch (Exception e) {
+            log.error("Failed to update project", e);
+            throw new RuntimeException("Failed to update project", e);
+        }
+    }
+
+    public void deleteProject(Project p) {
+        try {
+            projectDAO.delete(p.getId());
+            projects.remove(p);
+        } catch (Exception e) {
+            log.error("Failed to delete project", e);
+            throw new RuntimeException("Failed to delete project", e);
         }
     }
 }
