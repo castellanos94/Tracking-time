@@ -10,8 +10,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
@@ -50,6 +53,9 @@ public class HistoryController {
     private Label totalHoursLabel;
     @FXML
     private Label totalEarningsLabel;
+
+    @FXML
+    private PieChart projectPieChart;
 
     private ObservableList<TimeEntry> historyData = FXCollections.observableArrayList();
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -157,6 +163,7 @@ public class HistoryController {
                         this.historyTable.getScene().getWindow());
             }
             historyTable.refresh();
+            updateCharts();
         });
         categoryColumn.setCellFactory(
                 javafx.scene.control.cell.ComboBoxTableCell
@@ -214,6 +221,7 @@ public class HistoryController {
             }
             historyTable.refresh();
             calculateTotal();
+            updateCharts();
         });
         historyTable.setItems(historyData);
         historyTable.setEditable(true);
@@ -244,6 +252,7 @@ public class HistoryController {
             List<TimeEntry> entries = timeEntryService.getEntriesBetweenDates(start, end);
             historyData.setAll(entries);
             calculateTotal();
+            updateCharts();
         }
     }
 
@@ -260,6 +269,35 @@ public class HistoryController {
 
         totalHoursLabel.setText(formatDuration(totalSeconds));
         totalEarningsLabel.setText(String.format("$%.2f", totalEarnings));
+    }
+
+    private void updateCharts() {
+        if (projectPieChart == null)
+            return;
+
+        Map<String, Double> projectTimeMap = new HashMap<>();
+        double totalDurationForAll = 0.0;
+
+        for (TimeEntry entry : historyData) {
+            String project = entry.getProjectName();
+            if (project == null || project.isEmpty()) {
+                project = "No Project";
+            }
+            double durationHours = entry.getDurationSeconds() / 3600.0;
+            projectTimeMap.put(project, projectTimeMap.getOrDefault(project, 0.0) + durationHours);
+            totalDurationForAll += durationHours;
+        }
+
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+        for (Map.Entry<String, Double> entry : projectTimeMap.entrySet()) {
+            if (entry.getValue() > 0) {
+                double percentage = (entry.getValue() / totalDurationForAll) * 100;
+                String label = String.format("%s - %.1f%%", entry.getKey(), percentage);
+                pieChartData.add(new PieChart.Data(label, entry.getValue()));
+            }
+        }
+
+        projectPieChart.setData(pieChartData);
     }
 
     @FXML
@@ -287,6 +325,7 @@ public class HistoryController {
                 }
                 historyTable.refresh();
                 calculateTotal();
+                updateCharts();
             }
         }
     }

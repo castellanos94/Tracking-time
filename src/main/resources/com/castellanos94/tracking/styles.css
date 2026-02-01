@@ -271,8 +271,45 @@
     -fx-cursor: hand;
 }
 
-.tab-pane .tab-label { 
+.tab-pane .tab-label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
+}
+
+/* --- Charts --- */
+.chart {
+    -fx-padding: 10px;
+    -fx-background-color: transparent;
+}
+
+.chart-content {
+    -fx-padding: 10px;
+}
+
+.chart-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 1.6em;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 4px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: #ffffff;
+}
+
+.chart-pie-label {
+    -fx-fill: #ffffff;
+    -fx-font-size: 1em;
+}
+
+.chart-pie-label-line {
+    -fx-stroke: #aaaaaa;
 }

@@ -45,6 +45,7 @@ The project follows the **MVC (Model-View-Controller)** pattern with a robust se
 
 *   **⏱️ Smart Timer**: Real-time tracking with activity descriptions and category selection.
 *   **📜 History View**: Browse detailed history with date range filtering. Edit descriptions, categories, and **Projects** inline, or delete entries with safety confirmation.
+*   **📊 Charts**: Visual analytics of time usage by project (Pie Charts) directly in the History View.
 *   **📊 Category Management**: Create, edit, and manage categories with custom hourly rates and colors.
 *   **📂 Project Management**: Create and manage projects with dedicated "Owner" fields.
 *   **📥 Import Wizard**: Import data from **JSON**, **CSV**, **Excel (XLSX)**, and **Custom** formats.
@@ -56,7 +57,6 @@ The project follows the **MVC (Model-View-Controller)** pattern with a robust se
 
 ### Roadmap 🚧
 
-*   **Charts**: Visual analytics of time usage (Weekly/Monthly breakdowns).
 *   **Cloud Sync**: Optional synchronization with cloud storage.
 
 ## 🛠 How to Run & Build
