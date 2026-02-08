@@ -44,7 +44,7 @@ The project follows the **MVC (Model-View-Controller)** pattern with a robust se
 ### Implemented ✅
 
 *   **⏱️ Smart Timer**: Real-time tracking with activity descriptions and category selection.
-*   **📜 History View**: Browse detailed history with date range filtering. Edit descriptions, categories, and **Projects** inline, or delete entries with safety confirmation.
+*   **📜 History View**: Browse detailed history with date range filtering. **New: Filter by multiple Projects and Categories.** Edit descriptions, categories, and **Projects** inline, or delete entries with safety confirmation.
 *   **📊 Charts**: Visual analytics of time usage by project (Pie Charts) directly in the History View.
 *   **📊 Category Management**: Create, edit, and manage categories with custom hourly rates and colors.
 *   **📂 Project Management**: Create and manage projects with dedicated "Owner" fields.

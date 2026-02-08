@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -35,6 +36,10 @@
                         <Label text="To:" styleClass="filter-label"/>
                         <DatePicker fx:id="endDatePicker" prefWidth="120" />
                     </HBox>
+                     <!-- New Multi-select Filters -->
+                    <MenuButton fx:id="projectFilterMenu" text="Projects (All)" prefWidth="150" styleClass="filter-menu-button"/>
+                    <MenuButton fx:id="categoryFilterMenu" text="Categories (All)" prefWidth="150" styleClass="filter-menu-button"/>
+                    
                     <Button text="Search" onAction="#handleSearch" styleClass="action-button-small"/>
                 </HBox>
             </VBox>

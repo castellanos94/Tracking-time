@@ -12,6 +12,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.stage.Stage;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +33,14 @@ public class HistoryController {
     private DatePicker startDatePicker;
     @FXML
     private DatePicker endDatePicker;
+
+    @FXML
+    private MenuButton projectFilterMenu;
+    @FXML
+    private MenuButton categoryFilterMenu;
+
+    private Set<String> selectedProjects = new HashSet<>();
+    private Set<String> selectedCategories = new HashSet<>();
 
     @FXML
     private TableView<TimeEntry> historyTable;
@@ -93,7 +105,7 @@ public class HistoryController {
         endDatePicker.setValue(LocalDate.now());
 
         setupTableColumns();
-
+        setupFilters();
         handleSearch();
     }
 
@@ -250,9 +262,106 @@ public class HistoryController {
 
         if (start != null && end != null) {
             List<TimeEntry> entries = timeEntryService.getEntriesBetweenDates(start, end);
+
+            // Filter by Project
+            if (!selectedProjects.isEmpty()) {
+                entries = entries.stream()
+                        .filter(e -> {
+                            String pName = e.getProjectName();
+                            if (pName == null || pName.isEmpty())
+                                pName = "No Project";
+                            return selectedProjects.contains(pName);
+                        })
+                        .collect(Collectors.toList());
+            }
+
+            // Filter by Category
+            if (!selectedCategories.isEmpty()) {
+                entries = entries.stream()
+                        .filter(e -> selectedCategories.contains(e.getCategoryName()))
+                        .collect(Collectors.toList());
+            }
+
             historyData.setAll(entries);
             calculateTotal();
             updateCharts();
+        }
+    }
+
+    private void setupFilters() {
+        // Projects
+        List<String> projects = projectService.getProjects().stream()
+                .map(Project::getName)
+                .collect(Collectors.toList());
+
+        // Add "No Project" only if not present and if there are entries with null/empty
+        // project?
+        // Or just ensure it's not a duplicate.
+        if (!projects.contains("No Project")) {
+            projects.add("No Project");
+        }
+
+        setupMultiSelectMenu(projectFilterMenu, projects, selectedProjects, "Projects");
+
+        // Categories
+        List<String> categories = categoryService.getAllCategoriesNames();
+        setupMultiSelectMenu(categoryFilterMenu, categories, selectedCategories, "Categories");
+    }
+
+    private void setupMultiSelectMenu(MenuButton menu, List<String> items, Set<String> selectedSet,
+            String labelPrefix) {
+        menu.getItems().clear();
+        selectedSet.clear(); // Clear previous selections or keep them? For now, let's select all by default.
+        selectedSet.addAll(items); // Default to all selected
+
+        // "Select All" / "Deselect All" item
+        CheckBox selectAllCb = new CheckBox("Select All");
+        selectAllCb.setSelected(true);
+        CustomMenuItem selectAllItem = new CustomMenuItem(selectAllCb);
+        selectAllItem.setHideOnClick(false);
+        menu.getItems().add(selectAllItem);
+
+        List<CheckBox> itemCheckBoxes = new ArrayList<>();
+
+        for (String item : items) {
+            CheckBox cb = new CheckBox(item);
+            cb.setSelected(true);
+            cb.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                if (isSelected) {
+                    selectedSet.add(item);
+                } else {
+                    selectedSet.remove(item);
+                    selectAllCb.setSelected(false); // Uncheck "Select All" if one is unchecked
+                }
+                updateMenuLabel(menu, labelPrefix, selectedSet.size(), items.size());
+            });
+            CustomMenuItem menuItem = new CustomMenuItem(cb);
+            menuItem.setHideOnClick(false);
+            menu.getItems().add(menuItem);
+            itemCheckBoxes.add(cb);
+        }
+
+        selectAllCb.setOnAction(e -> {
+            boolean isSelected = selectAllCb.isSelected();
+            for (CheckBox cb : itemCheckBoxes) {
+                cb.setSelected(isSelected);
+            }
+            if (isSelected) {
+                selectedSet.addAll(items);
+            } else {
+                selectedSet.clear();
+            }
+            updateMenuLabel(menu, labelPrefix, selectedSet.size(), items.size());
+        });
+
+        updateMenuLabel(menu, labelPrefix, selectedSet.size(), items.size());
+    }
+
+    private void updateMenuLabel(MenuButton menu, String prefix, int selectedCount, int totalCount) {
+        if (selectedCount == totalCount) {
+            menu.setText(prefix + " (All)");
+        } else {
+            menu.setText(prefix + " (" + selectedCount + ")");
         }
     }
 

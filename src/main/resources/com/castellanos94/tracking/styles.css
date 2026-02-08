@@ -35,7 +35,62 @@
 }
 
 .stop-button:hover {
-    -fx-background-color: #d32f2f;
+    -fx-background-radius: 50;
+}
+
+/* Filter Menu Button to match ComboBox */
+.filter-menu-button {
+    -fx-background-color: #333333;
+    -fx-background-radius: 5;
+    -fx-border-color: #555555;
+    -fx-border-radius: 5;
+    -fx-text-fill: white;
+}
+
+.filter-menu-button .label {
+    -fx-text-fill: white;
+}
+
+.filter-menu-button .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.filter-menu-button .arrow {
+    -fx-background-color: white;
+}
+
+.filter-menu-button:hover {
+    -fx-background-color: #444;
+}
+
+/* Context Menu for the Filter Button */
+.filter-menu-button .context-menu {
+    -fx-background-color: #333333;
+    -fx-border-color: #555555;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 2);
+}
+
+.filter-menu-button .menu-item:hover,
+.filter-menu-button .menu-item:focused {
+    -fx-background-color: #444;
+}
+
+/* CheckBoxes inside the Menu */
+.filter-menu-button .menu-item .check-box {
+    -fx-text-fill: white;
+}
+
+.filter-menu-button .menu-item .check-box .box {
+    -fx-background-color: #444;
+    -fx-border-color: #666;
+}
+
+.filter-menu-button .menu-item .check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.filter-menu-button .menu-item .check-box:selected .box {
+    -fx-background-color: #4CAF50;
 }
 
 /* ComboBox Styling */
